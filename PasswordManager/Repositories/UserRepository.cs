@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using PasswordManager.Database;
 using PasswordManager.Models;
 
@@ -22,6 +23,20 @@ namespace PasswordManager.Repositories
         {
             _context.Users.Add(user);
             _context.SaveChanges();
+            return user;
+        }
+
+        public User? ActivateAccount(Guid userId)
+        {
+            User? user = _context.Users.Find(userId);
+            if (user == null || user.Active)
+            {
+                return null;
+            }
+
+            user.Active = true;
+            _context.SaveChanges();
+
             return user;
         }
     }

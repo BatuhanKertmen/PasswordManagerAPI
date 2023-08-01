@@ -1,3 +1,4 @@
+using PasswordManager.Communications;
 using PasswordManager.Database;
 using PasswordManager.Facades;
 using PasswordManager.Middlewares;
@@ -20,6 +21,9 @@ namespace PasswordManager
                 builder.Services.AddTransient<IUserRepository, UserRepository>();
                 builder.Services.AddTransient<IUserPasswordService, UserPasswordService>();
                 builder.Services.AddTransient<IUserPasswordRepository, UserPasswordRepository>();
+                builder.Services.AddTransient<IActivationCodeService, ActivationCodeService>();
+                builder.Services.AddTransient<IActivationCodeRepository, ActivationCodeRepository>();
+                builder.Services.AddTransient<ICommunicationChannel, Mail>();
                 builder.Services.AddSwaggerGen();
             }
 

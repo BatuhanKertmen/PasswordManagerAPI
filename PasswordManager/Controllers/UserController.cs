@@ -9,7 +9,7 @@ using System.Text;
 namespace PasswordManager.Controllers
 {
     [Controller]
-    [Route("user")]
+    [Route("/api/[controller]")]
     public class UserController : ControllerBase
     {
         private readonly RegisterFacade _registerFacade;
@@ -30,6 +30,19 @@ namespace PasswordManager.Controllers
                 response
             );
         }
+
+        [HttpGet("activate/{id:guid}/{securityToken}")]
+        public IActionResult ActivateAccount([FromRoute] Guid id, [FromRoute] string securityToken)
+        {
+            bool successful = _registerFacade.ActivateAccount(id, securityToken);
+            if (!successful)
+            {
+                return BadRequest("Could Not Activate Account!");
+            }
+
+            return Ok("Account Activated");
+        }
+        
 
         [HttpGet("{id:guid}")]
         public IActionResult GetUser(Guid id)

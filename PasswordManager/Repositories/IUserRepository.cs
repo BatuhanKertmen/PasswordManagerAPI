@@ -8,5 +8,6 @@ namespace PasswordManager.Repositories
     {
         bool CheckEmailExists(string email);
         User SaveUSer(User email);
+        User? ActivateAccount(Guid userId);
     }
 }

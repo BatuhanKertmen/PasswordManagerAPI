@@ -7,6 +7,7 @@ namespace PasswordManager.Models
         [Key]
         public Guid Id { get; set; }
         public string Code { get; set; }
+        public DateTime ExpiryDate { get; set; }
         public DateTime Created { get; set; }
 
         public User User { get; set; }
