@@ -22,6 +22,11 @@ namespace PasswordManager.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] UserRegisterDto request)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
             var user = _mapper.Map<User>(request);
             var response = await _userActionsFacade.RegisterUserAsync(request);
 
