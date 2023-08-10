@@ -14,30 +14,35 @@ namespace PasswordManager.Repositories
             _context = context;
         }
 
-        public bool CheckEmailExists(string email)
+        public async Task<bool> CheckCommunicationAddressExistsAsync(string email)
         {
-            return _context.Users.Any(user => user.CommunicationAddress == email);
+            return await _context.Users.AnyAsync(user => user.CommunicationAddress == email);
         }
 
-        public User SaveUSer(User user)
+        public async Task<User> SaveUserAsync(User user)
         {
-            _context.Users.Add(user);
-            _context.SaveChanges();
+            await _context.Users.AddAsync(user);
+            await _context.SaveChangesAsync();
             return user;
         }
 
-        public User? ActivateAccount(Guid userId)
+        public async Task<User?> ActivateAccountAsync(Guid userId)
         {
-            User? user = _context.Users.Find(userId);
+            var user =  await _context.Users.FindAsync(userId);
             if (user == null || user.Active)
             {
                 return null;
             }
 
             user.Active = true;
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return user;
+        }
+
+        public async Task<User?> GetUserByCommunicationAddressAsync(string address)
+        {
+            return await _context.Users.FirstOrDefaultAsync(x => x.CommunicationAddress == address);
         }
     }
 }

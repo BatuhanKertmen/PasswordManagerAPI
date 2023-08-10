@@ -4,6 +4,7 @@ namespace PasswordManager.Services
 {
     public interface IUserService
     {
-        public User Register(string email);
+        public Task<User> RegisterAsync(User email);
+        public Task<User> GetUser(string communicationAddress);
     }
 }

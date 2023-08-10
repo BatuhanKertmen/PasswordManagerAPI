@@ -11,6 +11,5 @@
         public ICollection<ActivationCode> ActivationCodes { get; set; }
         public ICollection<LoginInformation> LoginInformations { get; set; }
         public UserPassword UserPassword { get; set; }
-
     }
 }

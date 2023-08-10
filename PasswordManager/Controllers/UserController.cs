@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using PasswordManager.Contracts;
 using PasswordManager.Facades;
-using PasswordManager.Mappers;
 using PasswordManager.Models;
-using PasswordManager.Services;
-using System.Text;
+using AutoMapper;
+using PasswordManager.DTO;
 
 namespace PasswordManager.Controllers
 {
@@ -12,17 +10,20 @@ namespace PasswordManager.Controllers
     [Route("/api/[controller]")]
     public class UserController : ControllerBase
     {
-        private readonly RegisterFacade _registerFacade;
+        private readonly UserActionsFacade _userActionsFacade;
+        private readonly IMapper _mapper;
 
-        public UserController(RegisterFacade registerFacade)
+        public UserController(UserActionsFacade userActionsFacade, IMapper mapper)
         {
-            _registerFacade = registerFacade;
+            _userActionsFacade = userActionsFacade;
+            _mapper = mapper;
         }
 
         [HttpPost("register")]
-        public IActionResult Register(CreateUserRequest request)
+        public async Task<IActionResult> Register(UserRegisterDto request)
         {
-            UserResponse response = _registerFacade.RegisterUser(request);
+            var user = _mapper.Map<User>(request);
+            var response = await _userActionsFacade.RegisterUserAsync(request);
 
             return CreatedAtAction(
                 nameof(GetUser),
@@ -32,9 +33,9 @@ namespace PasswordManager.Controllers
         }
 
         [HttpGet("activate/{id:guid}/{securityToken}")]
-        public IActionResult ActivateAccount([FromRoute] Guid id, [FromRoute] string securityToken)
+        public async Task<IActionResult> ActivateAccount([FromRoute] Guid id, [FromRoute] string securityToken)
         {
-            bool successful = _registerFacade.ActivateAccount(id, securityToken);
+            var successful = await _userActionsFacade.ActivateAccountAsync(id, securityToken);
             if (!successful)
             {
                 return BadRequest("Could Not Activate Account!");
@@ -42,7 +43,14 @@ namespace PasswordManager.Controllers
 
             return Ok("Account Activated");
         }
-        
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(UserLoginDto request)
+        {
+            var authKey = await _userActionsFacade.LoginUserAsync(request);
+            return Ok(authKey);
+        }
+
 
         [HttpGet("{id:guid}")]
         public IActionResult GetUser(Guid id)

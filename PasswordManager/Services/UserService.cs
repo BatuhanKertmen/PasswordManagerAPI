@@ -1,5 +1,4 @@
 ﻿using PasswordManager.Exceptions;
-using PasswordManager.Mappers;
 using PasswordManager.Models;
 using PasswordManager.Repositories;
 
@@ -15,14 +14,25 @@ namespace PasswordManager.Services
             _userRepository = userRepository;
         }
 
-        public User Register(string email)
+        public async Task<User> RegisterAsync(User user)
         {
-            if (_userRepository.CheckEmailExists(email))
+            if (await _userRepository.CheckCommunicationAddressExistsAsync(user.CommunicationAddress))
             {
                 throw new EmailAlreadyExistsException("A user with this already registered.");
             }
 
-            User user = _userRepository.SaveUSer(UserMapper.ToUser(email));
+            user = await _userRepository.SaveUserAsync(user);
+
+            return user;
+        }
+
+        public async Task<User> GetUser(string communicationAddress)
+        {
+            var user = await _userRepository.GetUserByCommunicationAddressAsync(communicationAddress);
+            if (user == null)
+            {
+                throw new EmailOrPasswordIsIncorrectException();
+            }
 
             return user;
         }
