@@ -42,21 +42,5 @@ namespace PasswordManager.Facades
         {
             return await _activationCodeService.ActivateAccountAsync(id, securityToken);
         }
-
-        public async Task<string> LoginUserAsync(UserLoginDto request)
-        {
-            var user = await _userService.GetUser(request.CommunicationAddress);
-            var isPasswordCorrect = await _userPasswordService.CheckPasswordAsync(user.Id, request.Password);
-
-            if (isPasswordCorrect == false)
-            {
-                throw new EmailOrPasswordIsIncorrectException();
-            }
-
-            
-            
-            
-            return "jwt";
-        }
     }
 }

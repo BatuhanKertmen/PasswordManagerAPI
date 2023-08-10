@@ -9,7 +9,7 @@ namespace PasswordManager.Services
     {
         private readonly IUserRepository _userRepository;
 
-        public UserService(IUserRepository userRepository, IConfiguration configuration)
+        public UserService(IUserRepository userRepository)
         {
             _userRepository = userRepository;
         }

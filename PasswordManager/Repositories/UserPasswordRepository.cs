@@ -19,11 +19,5 @@ namespace PasswordManager.Repositories
             await _appDbContext.SaveChangesAsync();
             return userPassword;
         }
-
-        public async Task<UserPassword?> GetUserPasswordByUser_IdAsync(Guid userId)
-        {
-            var userPassword = await _appDbContext.UserPasswords.FirstOrDefaultAsync(item => item.UserId == userId);
-            return userPassword;
-        }
     }
 }

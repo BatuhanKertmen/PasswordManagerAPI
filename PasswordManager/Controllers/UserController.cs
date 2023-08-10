@@ -44,14 +44,6 @@ namespace PasswordManager.Controllers
             return Ok("Account Activated");
         }
 
-        [HttpPost("login")]
-        public async Task<IActionResult> Login(UserLoginDto request)
-        {
-            var authKey = await _userActionsFacade.LoginUserAsync(request);
-            return Ok(authKey);
-        }
-
-
         [HttpGet("{id:guid}")]
         public IActionResult GetUser(Guid id)
         {
