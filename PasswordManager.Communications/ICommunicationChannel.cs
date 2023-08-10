@@ -2,7 +2,7 @@
 {
     public interface ICommunicationChannel
     {
-        public void SendMessage(string address, string message);
+        public Task SendMessageAsync(string from, string pass, string to, string subject, string message);
 
     }
 }
