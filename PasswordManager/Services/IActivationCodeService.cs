@@ -4,7 +4,7 @@ namespace PasswordManager.Services
 {
     public interface IActivationCodeService
     {
-        public ActivationCode SendActivationCode(User user);
-        public bool ActivateAccount(Guid userId, string securityToken);
+        public Task<ActivationCode> SendActivationCode(User user);
+        public Task<bool> ActivateAccountAsync(Guid userId, string securityToken);
     }
 }

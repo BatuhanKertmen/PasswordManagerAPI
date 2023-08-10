@@ -1,4 +1,5 @@
-﻿using PasswordManager.Database;
+﻿using Microsoft.EntityFrameworkCore;
+using PasswordManager.Database;
 using PasswordManager.Models;
 
 namespace PasswordManager.Repositories;
@@ -12,21 +13,22 @@ public class ActivationCodeRepository : IActivationCodeRepository
         _dbContext = dbContext;
     }
 
-    public ActivationCode Save(ActivationCode activationCode)
+    public async Task<ActivationCode> SaveAsync(ActivationCode activationCode)
     {
-        _dbContext.ActivationCodes.Add(activationCode);
-        _dbContext.SaveChanges();
+        await _dbContext.ActivationCodes.AddAsync(activationCode);
+        await _dbContext.SaveChangesAsync();
         return activationCode;
     }
 
-    public IEnumerable<ActivationCode> GetActivationCodesByUserId(Guid userId)
+    public async Task<List<ActivationCode>> GetActivationCodesByUser_IdAsync(Guid userId)
     {
-        return _dbContext.ActivationCodes.Where(activationCode => activationCode.User.Id == userId);
+        var activationCodes = _dbContext.ActivationCodes;
+        return await _dbContext.ActivationCodes.Where(activationCode => activationCode.User.Id == userId).ToListAsync();
     }
 
-    public void RemoveActivationCodes(IEnumerable<ActivationCode> activationCodes)
+    public async Task RemoveActivationCodes(IEnumerable<ActivationCode> activationCodes)
     {
         _dbContext.ActivationCodes.RemoveRange(activationCodes);
-        _dbContext.SaveChanges();
+        await _dbContext.SaveChangesAsync();
     }
 }

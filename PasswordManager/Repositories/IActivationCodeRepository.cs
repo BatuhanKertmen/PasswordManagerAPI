@@ -4,7 +4,7 @@ namespace PasswordManager.Repositories;
 
 public interface IActivationCodeRepository
 {
-    ActivationCode Save(ActivationCode activationCode);
-    IEnumerable<ActivationCode> GetActivationCodesByUserId(Guid userId);
-    void RemoveActivationCodes(IEnumerable<ActivationCode> activationCodes);
+    Task<ActivationCode> SaveAsync(ActivationCode activationCode);
+    Task<List<ActivationCode>> GetActivationCodesByUser_IdAsync(Guid userId);
+    Task RemoveActivationCodes(IEnumerable<ActivationCode> activationCodes);
 }

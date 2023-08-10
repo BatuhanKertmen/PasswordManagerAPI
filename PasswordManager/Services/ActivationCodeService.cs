@@ -21,11 +21,11 @@ namespace PasswordManager.Services
             _userRepository = userRepository;
         }
 
-        public bool ActivateAccount(Guid userId, string securityToken)
+        public async Task<bool> ActivateAccountAsync(Guid userId, string securityToken)
         {
-            IEnumerable<ActivationCode> activationCodes = _activationCodeRepository.GetActivationCodesByUserId(userId);
+            var activationCodes = await _activationCodeRepository.GetActivationCodesByUser_IdAsync(userId);
             
-            bool isSecurityTokenValid = activationCodes.Any(activationCode => 
+            var isSecurityTokenValid = activationCodes.Any(activationCode => 
                 activationCode.ExpiryDate > DateTime.UtcNow && 
                 HmacSecurityToken(userId + activationCode.Code) == securityToken);
 
@@ -34,17 +34,17 @@ namespace PasswordManager.Services
                 return false;
             }
 
-            User? user = _userRepository.ActivateAccount(userId);
+            var user = await _userRepository.ActivateAccountAsync(userId);
             return user != null;
         }
 
-        public ActivationCode SendActivationCode(User user)
+        public async Task<ActivationCode> SendActivationCode(User user)
         {
-            List<ActivationCode> activationCodes = _activationCodeRepository.GetActivationCodesByUserId(user.Id).ToList();
-            _activationCodeRepository.RemoveActivationCodes(activationCodes);
+            var activationCodes = await _activationCodeRepository.GetActivationCodesByUser_IdAsync(user.Id);
+            await _activationCodeRepository.RemoveActivationCodes(activationCodes);
 
-            string securityToken = CreateSecurityToken(user.Id, out string code);
-            ActivationCode activationCode = new ActivationCode
+            var securityToken = CreateSecurityToken(user.Id, out string code);
+            var activationCode = new ActivationCode
             {
                 Code = code,
                 Created = DateTime.UtcNow,
@@ -52,27 +52,30 @@ namespace PasswordManager.Services
                 User = user
             };
 
-            _activationCodeRepository.Save(activationCode);
+            await _activationCodeRepository.SaveAsync(activationCode);
             
-            string activationLink = $"https://localhost:7186/activate/{user.Id}/{securityToken}";
-            string mailTemplate = LoadMailTemplate(activationLink);
-            
-            _communicationChannel.SendMessage(user.CommunicationAddress, mailTemplate);
+            var activationLink = $"https://localhost:7186/api/user/activate/{user.Id}/{securityToken}";
+            var mailTemplate = LoadMailTemplate(activationLink);
+
+
+            string from = _configuration.GetValue<string>("Mail:address");
+            string pass = _configuration.GetValue<string>("Mail:password");
+            await _communicationChannel.SendMessageAsync(from, pass, user.CommunicationAddress, "Activation Link", mailTemplate);
             
             return activationCode;
         }
 
         private string LoadMailTemplate(string activationLink)
         {
-            string html = File.ReadAllText("Templates/ActivationCodeEmailTemplate.html", Encoding.UTF8);
-            string linkInjectedHtml = html.Replace("[Activation Link]", activationLink);
+            var html = File.ReadAllText("Templates/ActivationCodeEmailTemplate.html", Encoding.UTF8);
+            var linkInjectedHtml = html.Replace("[Activation Link]", activationLink);
             return linkInjectedHtml;
         }
 
         private string CreateSecurityToken(Guid userId, out string code)
         {
             code = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
-            string unhashedSecurityToken = userId + code;
+            var unhashedSecurityToken = userId + code;
 
             return HmacSecurityToken(unhashedSecurityToken);
         }
@@ -80,7 +83,7 @@ namespace PasswordManager.Services
         private string HmacSecurityToken(string token)
         {
             byte[] securityTokenBytes;
-            using (HMACSHA256 hmac = new HMACSHA256( Encoding.UTF8.GetBytes(_configuration.GetValue<string>("HMAC:key"))))
+            using (var hmac = new HMACSHA256( Encoding.UTF8.GetBytes(_configuration.GetValue<string>("HMAC:key"))))
             {
                 securityTokenBytes = hmac.ComputeHash(Encoding.UTF8.GetBytes(token));
             }
