@@ -4,6 +4,7 @@ namespace PasswordManager.Services
 {
     public interface IUserPasswordService
     {
-        public UserPassword Save(string password, User passwordOwner);
+        public Task<UserPassword> SaveAsync(string password, User passwordOwner);
+        Task<bool> CheckPasswordAsync(Guid userId, string password);
     }
 }

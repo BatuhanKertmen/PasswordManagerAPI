@@ -4,6 +4,7 @@ namespace PasswordManager.Repositories
 {
     public interface IUserPasswordRepository
     {
-        UserPassword Save(UserPassword user);
+        Task<UserPassword> SaveAsync(UserPassword user);
+        Task<UserPassword?> GetUserPasswordByUser_IdAsync(Guid userId);
     }
 }

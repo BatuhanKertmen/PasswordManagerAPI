@@ -4,6 +4,7 @@ using PasswordManager.Models;
 using PasswordManager.Repositories;
 using System.Security.Cryptography;
 using System.Text;
+using PasswordManager.Exceptions;
 
 namespace PasswordManager.Services
 {
@@ -18,30 +19,23 @@ namespace PasswordManager.Services
             _userPasswordRepository = userPasswordRepository;
         }
 
-        public UserPassword Save(string password, User passwordOwner)
+        public async Task<UserPassword> SaveAsync(string password, User passwordOwner)
         {
-            byte[] salt = UtilityFunctions.GenerateRandomBytes(32);
+            var salt = UtilityFunctions.GenerateRandomBytes(32);
+            var nonce = UtilityFunctions.GenerateRandomBytes(12);
+            var tag = new byte[16];
 
-            using Argon2id argon2id = new Argon2id(Encoding.UTF8.GetBytes(password));
-            {
-                argon2id.Salt = salt;
-                argon2id.MemorySize = (int)Argon2idStandards.MemorySize;
-                argon2id.DegreeOfParallelism = (int)Argon2idStandards.DegreeOfParallelism;
-                argon2id.Iterations = (int)Argon2idStandards.Iterations;
-            }
-
-            byte[] hashedPassword = argon2id.GetBytes(128);
-
-            byte[] nonce = UtilityFunctions.GenerateRandomBytes(12);
-            byte[] encryptedHashedPassword = new byte[hashedPassword.Length];
-            byte[] tag = new byte[16];
-
-            using AesGcm aes = new AesGcm(Convert.FromHexString(_configuration.GetValue<string>("pepper:key")));
-            {
-                aes.Encrypt(nonce, hashedPassword, encryptedHashedPassword, tag);
-            }
-
-            UserPassword userPassword = new UserPassword()
+            var encryptedHashedPassword = SaltAndEncryptPassword(
+                password,
+                salt,
+                (int)Argon2idStandards.MemorySize,
+                (int)Argon2idStandards.DegreeOfParallelism,
+                (int)Argon2idStandards.Iterations,
+                nonce,
+                out tag
+            );
+            
+            var userPassword = new UserPassword()
             {
                 Password = encryptedHashedPassword,
                 Salt = salt,
@@ -55,8 +49,66 @@ namespace PasswordManager.Services
                 User = passwordOwner
             };
 
-            userPassword = _userPasswordRepository.Save(userPassword);
+            userPassword = await _userPasswordRepository.SaveAsync(userPassword);
             return userPassword;
+        }
+
+        public async Task<bool> CheckPasswordAsync(Guid userId, string password)
+        {
+            var userPassword = await _userPasswordRepository.GetUserPasswordByUser_IdAsync(userId);
+            byte[] tag = new byte[16];
+            if (userPassword == null)
+            {
+                throw new UserNotFoundException();
+            }
+            var encryptedHashedPassword = SaltAndEncryptPassword(password, userPassword, out tag);
+
+            return encryptedHashedPassword.SequenceEqual(userPassword.Password) && tag.SequenceEqual(userPassword.Tag);
+        }
+
+
+        private byte[] SaltAndEncryptPassword(string password, UserPassword userPassword, out byte[] tag)
+        {
+            return SaltAndEncryptPassword(
+                password,
+                userPassword.Salt,
+                userPassword.MemorySize,
+                userPassword.DegreeOfParallism,
+                userPassword.Iterations,
+                userPassword.Nonce,
+                out tag
+            );
+        }
+
+        private byte[] SaltAndEncryptPassword(
+            string password,
+            byte[] salt,
+            int memorySize,
+            int degreeOfParallelism,
+            int iterations,
+            byte[] nonce,
+            out byte[] tag
+        )
+        {
+            using var argon2id = new Argon2id(Encoding.UTF8.GetBytes(password));
+            {
+                argon2id.Salt = salt;
+                argon2id.MemorySize = memorySize;
+                argon2id.DegreeOfParallelism = degreeOfParallelism;
+                argon2id.Iterations = iterations;
+            }
+
+            var hashedPassword = argon2id.GetBytes(128);
+            
+            var encryptedHashedPassword = new byte[hashedPassword.Length];
+            tag = new byte[16];
+
+            using var aes = new AesGcm(Convert.FromHexString(_configuration.GetValue<string>("pepper:key")));
+            {
+                aes.Encrypt(nonce, hashedPassword, encryptedHashedPassword, tag);
+            }
+
+            return encryptedHashedPassword;
         }
     }
 }

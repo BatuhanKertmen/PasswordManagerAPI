@@ -1,4 +1,5 @@
-﻿using PasswordManager.Database;
+﻿using Microsoft.EntityFrameworkCore;
+using PasswordManager.Database;
 using PasswordManager.Models;
 
 namespace PasswordManager.Repositories
@@ -12,10 +13,16 @@ namespace PasswordManager.Repositories
             _appDbContext = appDbContext;
         }
 
-        public UserPassword Save(UserPassword userPassword)
+        public async Task<UserPassword> SaveAsync(UserPassword userPassword)
         {
-            _appDbContext.Add(userPassword);
-            _appDbContext.SaveChanges();
+            await _appDbContext.UserPasswords.AddAsync(userPassword);
+            await _appDbContext.SaveChangesAsync();
+            return userPassword;
+        }
+
+        public async Task<UserPassword?> GetUserPasswordByUser_IdAsync(Guid userId)
+        {
+            var userPassword = await _appDbContext.UserPasswords.FirstOrDefaultAsync(item => item.UserId == userId);
             return userPassword;
         }
     }
