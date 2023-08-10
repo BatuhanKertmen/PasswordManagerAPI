@@ -10,9 +10,10 @@ namespace PasswordManager.Middlewares
     public class GlobalExceptionHandler : IMiddleware
     {
         // TODO: DI Logger
+        
 
-        readonly static string ServerError = "Server Error";
-        readonly static string UserError = "User Error";
+        private const string ServerError = "Server Error";
+        private const string UserError = "User Error";
 
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
@@ -20,7 +21,18 @@ namespace PasswordManager.Middlewares
             {
                 await next(context);
             }
-            catch (EmailAlreadyExistsException e)
+            catch (EmailOrPasswordIsIncorrectException)
+            {
+                UpdateHttpContext(
+                    context,
+                    (int)HttpStatusCode.BadRequest,
+                    UserError,
+                    "Email or Password is incorrect",
+                    "The provided email or password does not match."
+                );
+            }
+            
+            catch (EmailAlreadyExistsException)
             {
            
 
@@ -32,10 +44,8 @@ namespace PasswordManager.Middlewares
                     "The provided email address is already registered in our system."
                 );
             }
-            catch (Exception e)
+            catch (Exception )
             {
-               
-
                 UpdateHttpContext(
                     context,
                     (int)HttpStatusCode.InternalServerError,
