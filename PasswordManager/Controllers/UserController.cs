@@ -20,7 +20,7 @@ namespace PasswordManager.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register(UserRegisterDto request)
+        public async Task<IActionResult> Register([FromBody] UserRegisterDto request)
         {
             var user = _mapper.Map<User>(request);
             var response = await _userActionsFacade.RegisterUserAsync(request);
@@ -38,10 +38,10 @@ namespace PasswordManager.Controllers
             var successful = await _userActionsFacade.ActivateAccountAsync(id, securityToken);
             if (!successful)
             {
-                return BadRequest("Could Not Activate Account!");
+                return BadRequest();
             }
 
-            return Ok("Account Activated");
+            return Ok();
         }
 
         [HttpGet("{id:guid}")]
