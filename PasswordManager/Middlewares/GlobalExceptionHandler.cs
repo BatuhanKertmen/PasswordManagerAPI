@@ -21,39 +21,58 @@ namespace PasswordManager.Middlewares
             {
                 await next(context);
             }
-            catch (EmailOrPasswordIsIncorrectException)
+            catch (AccountNotActivatedException e)
+            {
+                UpdateHttpContext(
+                    context,
+                    (int)HttpStatusCode.Forbidden,
+                    UserError,
+                    "Account not Activated",
+                    e.StackTrace
+                );
+            }
+            catch (EmailOrPasswordIsIncorrectException e)
             {
                 UpdateHttpContext(
                     context,
                     (int)HttpStatusCode.BadRequest,
                     UserError,
                     "Email or Password is incorrect",
-                    "The provided email or password does not match."
+                    e.StackTrace
                 );
             }
-            
-            catch (EmailAlreadyExistsException)
-            {
-           
 
+            catch (EmailAlreadyExistsException e)
+            {
                 UpdateHttpContext(
                     context,
                     (int)HttpStatusCode.Conflict,
                     UserError,
                     "Email already exists",
-                    "The provided email address is already registered in our system."
+                    e.StackTrace
                 );
             }
-            catch (Exception )
+            catch (UserPasswordNotFoundException e)
+            {
+                UpdateHttpContext(
+                    context,
+                    (int)HttpStatusCode.NotFound,
+                    ServerError,
+                    "User Password Not Found",
+                    e.StackTrace
+                );
+            }
+            /*
+            catch (Exception e)
             {
                 UpdateHttpContext(
                     context,
                     (int)HttpStatusCode.InternalServerError,
                     ServerError,
                     "Server Error",
-                    "An internal server error has occured!"
+                    e.StackTrace
                 );    
-            }
+            }*/
         }
 
         private async void UpdateHttpContext(HttpContext context, int statusCode, string type, string title, string detail)
