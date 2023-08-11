@@ -31,14 +31,14 @@ namespace PasswordManager.Facades
             _jwtService = jwtService;
         }
 
-        public async Task<UserResponseDto> RegisterAsync(UserRegisterDto request)
+        public async Task<UserRegisterResponseDto> RegisterAsync(UserRegisterRequestDto request)
         {
             var user = await _userService.RegisterAsync(_mapper.Map<User>(request));
             await _userPasswordService.SaveAsync(request.Password, user);
 
             await _activationCodeService.SendActivationCode(user);
 
-            return _mapper.Map<UserResponseDto>(user);
+            return _mapper.Map<UserRegisterResponseDto>(user);
         }
 
         public async Task<bool> ActivateAccountAsync(Guid id, string securityToken)
@@ -46,7 +46,7 @@ namespace PasswordManager.Facades
             return await _activationCodeService.ActivateAccountAsync(id, securityToken);
         }
 
-        public async Task<string?> LoginAsync(UserLoginDto request)
+        public async Task<UserLoginResponseDto> LoginAsync(UserLoginRequestDto request)
         {
             var user = await _userService.GetUserAsync(request.CommunicationAddress);
             var isPasswordCorrect = await _userPasswordService.CheckPassword(user.Id, request.Password);
@@ -56,7 +56,8 @@ namespace PasswordManager.Facades
                 throw new EmailOrPasswordIsIncorrectException();
             }
             
-            return _jwtService.CreateJwtToken(user);
+            var token = _jwtService.CreateJwtToken(user);
+            return _mapper.Map<UserLoginResponseDto>(token);
         }
     }
 }

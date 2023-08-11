@@ -16,7 +16,7 @@ namespace PasswordManager.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> RegisterAsync([FromBody] UserRegisterDto request)
+        public async Task<IActionResult> RegisterAsync([FromBody] UserRegisterRequestDto request)
         {
             if (!ModelState.IsValid)
             {
@@ -33,7 +33,7 @@ namespace PasswordManager.Controllers
         }
         
         [HttpPost("login")]
-        public async Task<IActionResult> LoginAsync([FromBody] UserLoginDto request)
+        public async Task<IActionResult> LoginAsync([FromBody] UserLoginRequestDto request)
         {
             if (!ModelState.IsValid)
             {

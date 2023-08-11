@@ -2,7 +2,7 @@
 
 namespace PasswordManager.DTO;
 
-public class UserRegisterDto
+public class UserLoginRequestDto
 {
     [Required(ErrorMessage = "Email is required")]
     [EmailAddress(ErrorMessage = "Invalid email format")]
