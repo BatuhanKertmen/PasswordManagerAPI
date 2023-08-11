@@ -64,12 +64,12 @@ namespace PasswordManager.Services
             var tag = new byte[16];
             var encryptedHashedPassword = SaltAndEncryptPassword(password, userPassword, out tag);
 
-            if (tag != userPassword.Tag)
+            if (Enumerable.SequenceEqual(tag, userPassword.Tag) == false)
             {
                 return false;
             }
 
-            if (encryptedHashedPassword != userPassword.Password)
+            if (Enumerable.SequenceEqual(encryptedHashedPassword, userPassword.Password) == false) 
             {
                 return false;
             }
