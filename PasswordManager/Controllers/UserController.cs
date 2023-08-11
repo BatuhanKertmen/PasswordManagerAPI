@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PasswordManager.Facades;
-using PasswordManager.Models;
-using AutoMapper;
 using PasswordManager.DTO;
 
 namespace PasswordManager.Controllers
@@ -11,12 +9,10 @@ namespace PasswordManager.Controllers
     public class UserController : ControllerBase
     {
         private readonly UserActionsFacade _userActionsFacade;
-        private readonly IMapper _mapper;
 
-        public UserController(UserActionsFacade userActionsFacade, IMapper mapper)
+        public UserController(UserActionsFacade userActionsFacade)
         {
             _userActionsFacade = userActionsFacade;
-            _mapper = mapper;
         }
 
         [HttpPost("register")]
