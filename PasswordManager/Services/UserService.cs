@@ -21,17 +21,21 @@ namespace PasswordManager.Services
                 throw new EmailAlreadyExistsException("A user with this already registered.");
             }
 
-            user = await _userRepository.SaveUserAsync(user);
+            user = await _userRepository.SaveAsync(user);
 
             return user;
         }
-
-        public async Task<User> GetUser(string communicationAddress)
+        
+        public async Task<User> GetUserAsync(string communicationAddress)
         {
-            var user = await _userRepository.GetUserByCommunicationAddressAsync(communicationAddress);
+            var user = await _userRepository.GetAsync(communicationAddress);
             if (user == null)
             {
                 throw new EmailOrPasswordIsIncorrectException();
+            }
+            if (user.Active == false)
+            {
+                throw new AccountNotActivatedException();
             }
 
             return user;
