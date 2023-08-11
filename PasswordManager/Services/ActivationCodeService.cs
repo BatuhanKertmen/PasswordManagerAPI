@@ -54,7 +54,7 @@ namespace PasswordManager.Services
 
             await _activationCodeRepository.SaveAsync(activationCode);
             
-            var activationLink = $"https://localhost:7186/api/user/activate/{user.Id}/{securityToken}";
+            var activationLink = $"https://localhost:7186/api/v1/user/activate/{user.Id}/{securityToken}";
             var mailTemplate = LoadMailTemplate(activationLink);
 
 
