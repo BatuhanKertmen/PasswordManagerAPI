@@ -30,6 +30,7 @@ namespace PasswordManager
                 builder.Services.AddTransient<IActivationCodeService, ActivationCodeService>();
                 builder.Services.AddTransient<IActivationCodeRepository, ActivationCodeRepository>();
                 builder.Services.AddTransient<ICommunicationChannel, Mail>();
+                builder.Services.AddTransient<IJwtService, JwtService>();
                 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     .AddJwtBearer(options =>
                         options.TokenValidationParameters = new TokenValidationParameters

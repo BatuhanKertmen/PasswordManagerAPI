@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PasswordManager.Facades;
-using PasswordManager.Models;
-using AutoMapper;
 using PasswordManager.DTO;
 
 namespace PasswordManager.Controllers
@@ -11,30 +9,40 @@ namespace PasswordManager.Controllers
     public class UserController : ControllerBase
     {
         private readonly UserActionsFacade _userActionsFacade;
-        private readonly IMapper _mapper;
 
-        public UserController(UserActionsFacade userActionsFacade, IMapper mapper)
+        public UserController(UserActionsFacade userActionsFacade)
         {
             _userActionsFacade = userActionsFacade;
-            _mapper = mapper;
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] UserRegisterDto request)
+        public async Task<IActionResult> RegisterAsync([FromBody] UserRegisterRequestDto request)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
             
-            var user = _mapper.Map<User>(request);
-            var response = await _userActionsFacade.RegisterUserAsync(request);
+            var response = await _userActionsFacade.RegisterAsync(request);
 
             return CreatedAtAction(
                 nameof(GetUser),
                 new { id = response.Id },
                 response
             );
+        }
+        
+        [HttpPost("login")]
+        public async Task<IActionResult> LoginAsync([FromBody] UserLoginRequestDto request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var response = await _userActionsFacade.LoginAsync(request);
+
+            return Ok(response);
         }
 
         [HttpGet("activate/{id:guid}/{securityToken}")]
@@ -48,7 +56,7 @@ namespace PasswordManager.Controllers
 
             return Ok();
         }
-
+        
         [HttpGet("{id:guid}")]
         public IActionResult GetUser(Guid id)
         {

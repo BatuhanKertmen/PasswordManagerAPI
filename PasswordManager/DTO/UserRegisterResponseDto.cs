@@ -1,6 +1,6 @@
 ﻿namespace PasswordManager.DTO;
 
-public class UserResponseDto
+public class UserRegisterResponseDto
 {
     public Guid Id { get; set; }
     public string CommunicationAddress { get; set; }

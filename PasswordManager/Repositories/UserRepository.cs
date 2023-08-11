@@ -19,7 +19,7 @@ namespace PasswordManager.Repositories
             return await _context.Users.AnyAsync(user => user.CommunicationAddress == email);
         }
 
-        public async Task<User> SaveUserAsync(User user)
+        public async Task<User> SaveAsync(User user)
         {
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
@@ -40,7 +40,7 @@ namespace PasswordManager.Repositories
             return user;
         }
 
-        public async Task<User?> GetUserByCommunicationAddressAsync(string address)
+        public async Task<User?> GetAsync(string address)
         {
             return await _context.Users.FirstOrDefaultAsync(x => x.CommunicationAddress == address);
         }

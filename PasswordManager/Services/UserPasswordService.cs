@@ -53,6 +53,30 @@ namespace PasswordManager.Services
             return userPassword;
         }
 
+        public async Task<bool> CheckPassword(Guid userId, string password)
+        {
+            var userPassword = await _userPasswordRepository.GetAsync(userId);
+            if (userPassword == null)
+            {
+                throw new UserPasswordNotFoundException();
+            }
+
+            var tag = new byte[16];
+            var encryptedHashedPassword = SaltAndEncryptPassword(password, userPassword, out tag);
+
+            if (Enumerable.SequenceEqual(tag, userPassword.Tag) == false)
+            {
+                return false;
+            }
+
+            if (Enumerable.SequenceEqual(encryptedHashedPassword, userPassword.Password) == false) 
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         private byte[] SaltAndEncryptPassword(string password, UserPassword userPassword, out byte[] tag)
         {
             return SaltAndEncryptPassword(

@@ -19,5 +19,10 @@ namespace PasswordManager.Repositories
             await _appDbContext.SaveChangesAsync();
             return userPassword;
         }
+
+        public async Task<UserPassword?> GetAsync(Guid userId)
+        {
+            return await _appDbContext.UserPasswords.FirstOrDefaultAsync(userPassword => userPassword.UserId == userId);
+        }
     }
 }
