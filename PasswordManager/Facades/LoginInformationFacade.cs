@@ -36,11 +36,15 @@ public class LoginInformationFacade
         
         var loginInformation = _mapper.Map<LoginInformation>(data);
         loginInformation.User = user;
-
-        var loginInformationPassword = _mapper.Map<LoginInformationPassword>(data); 
-        loginInformation.LoginInformationPassword = loginInformationPassword;
-
+        
         loginInformation = await _loginInformationService.SaveAsync(loginInformation);
+        
+
+        var loginInformationPassword = _mapper.Map<LoginInformationPassword>(data);
+        loginInformationPassword.LoginInformationId = loginInformation.Id;
+        loginInformationPassword.LoginInformation = loginInformation;
+        
+        loginInformation.LoginInformationPassword = loginInformationPassword;
         await _loginInformationPasswordService.SaveAsync(loginInformationPassword);
 
         return _mapper.Map<LoginInformationResponseDto>(loginInformation);
