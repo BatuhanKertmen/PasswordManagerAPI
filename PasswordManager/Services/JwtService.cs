@@ -28,10 +28,19 @@ public class JwtService : IJwtService
             _configuration.GetValue<string>("JWT:issuer"),
             _configuration.GetValue<string>("JWT:audience"),
             claims,
-            expires: DateTime.UtcNow.AddMinutes(15),
+            expires: DateTime.UtcNow.AddDays(1),
             signingCredentials: credentials
         );
 
         return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+
+    public Guid GetUserId(string authHeader)
+    {
+        var handler = new JwtSecurityTokenHandler();
+        var jwtSecurityToken = handler.ReadJwtToken(authHeader.Split(" ")[1]);
+        var userIdClaim = jwtSecurityToken.Claims.First(claim => claim.Type == ClaimTypes.PrimarySid);
+        var userId = userIdClaim.Value;
+        return Guid.Parse(userId);
     }
 }
