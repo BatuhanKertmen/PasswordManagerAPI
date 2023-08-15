@@ -44,5 +44,10 @@ namespace PasswordManager.Repositories
         {
             return await _context.Users.FirstOrDefaultAsync(x => x.CommunicationAddress == address);
         }
+
+        public async Task<User?> GetAsync(Guid id)
+        {
+            return await _context.Users.FindAsync(id);
+        }
     }
 }

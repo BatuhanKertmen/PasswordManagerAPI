@@ -6,5 +6,6 @@ namespace PasswordManager.Services
     {
         public Task<User> RegisterAsync(User email);
         public Task<User> GetUserAsync(string communicationAddress);
+        public Task<User> GetUserAsync(Guid id);
     }
 }
