@@ -21,5 +21,6 @@ namespace PasswordManager.Database
         public DbSet<ActivationCode> ActivationCodes { get; set; }
         public DbSet<LoginInformation> LoginInformation { get; set; }
         public DbSet<UserPassword> UserPasswords { get; set; }
+        public DbSet<LoginInformationPassword> LoginInformationPasswords { get; set; }
     }
 }
