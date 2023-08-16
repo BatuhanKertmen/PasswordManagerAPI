@@ -1,4 +1,5 @@
-﻿using PasswordManager.Database;
+﻿using Microsoft.EntityFrameworkCore;
+using PasswordManager.Database;
 using PasswordManager.Models;
 
 namespace PasswordManager.Repositories;
@@ -17,5 +18,12 @@ public class LoginInformationRepository : ILoginInformationRepository
         await _context.LoginInformation.AddAsync(loginInformation);
         await _context.SaveChangesAsync();
         return loginInformation;
+    }
+
+    public async Task<IEnumerable<LoginInformation>> GetAllByDomainAsync(string domain)
+    {
+        return await _context.LoginInformation.Where(info => info.Domain == domain)
+            .Include(info => info.LoginInformationPassword)
+            .ToListAsync();
     }
 }
