@@ -5,7 +5,7 @@ using PasswordManager.DTO;
 namespace PasswordManager.Controllers
 {
     [Controller]
-    [Route("/api/[controller]")]
+    [Route("/api/v1/[controller]")]
     public class UserController : ControllerBase
     {
         private readonly UserActionsFacade _userActionsFacade;

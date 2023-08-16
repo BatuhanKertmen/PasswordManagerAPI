@@ -6,23 +6,23 @@ namespace PasswordManager.Repositories
 {
     public class UserPasswordRepository : IUserPasswordRepository
     {
-        private readonly AppDbContext _appDbContext;
+        private readonly AppDbContext _context;
 
-        public UserPasswordRepository(AppDbContext appDbContext)
+        public UserPasswordRepository(AppDbContext context)
         {
-            _appDbContext = appDbContext;
+            _context = context;
         }
 
         public async Task<UserPassword> SaveAsync(UserPassword userPassword)
         {
-            await _appDbContext.UserPasswords.AddAsync(userPassword);
-            await _appDbContext.SaveChangesAsync();
+            await _context.UserPasswords.AddAsync(userPassword);
+            await _context.SaveChangesAsync();
             return userPassword;
         }
 
         public async Task<UserPassword?> GetAsync(Guid userId)
         {
-            return await _appDbContext.UserPasswords.FirstOrDefaultAsync(userPassword => userPassword.UserId == userId);
+            return await _context.UserPasswords.FirstOrDefaultAsync(userPassword => userPassword.UserId == userId);
         }
     }
 }

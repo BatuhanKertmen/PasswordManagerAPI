@@ -6,6 +6,7 @@ using PasswordManager.Communications;
 using PasswordManager.Database;
 using PasswordManager.Facades;
 using PasswordManager.Middlewares;
+using PasswordManager.Models;
 using PasswordManager.Repositories;
 using PasswordManager.Services;
 
@@ -27,8 +28,13 @@ public class BuilderServices
         builder.Services.AddTransient<IUserPasswordRepository, UserPasswordRepository>();
         builder.Services.AddTransient<IActivationCodeService, ActivationCodeService>();
         builder.Services.AddTransient<IActivationCodeRepository, ActivationCodeRepository>();
+        builder.Services.AddTransient<ILoginInformationService, LoginInformationService>();
+        builder.Services.AddTransient<ILoginInformationRepository, LoginInformationRepository>();
+        builder.Services.AddTransient<ILoginInformationPasswordService, LoginInformationPasswordService>();
+        builder.Services.AddTransient<ILoginInformationPasswordRepository, LoginInformationPasswordRepository>();
         builder.Services.AddTransient<ICommunicationChannel, Mail>();
         builder.Services.AddTransient<IJwtService, JwtService>();
+        
         builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
                 options.TokenValidationParameters = new TokenValidationParameters

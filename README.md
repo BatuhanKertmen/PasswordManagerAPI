@@ -14,7 +14,7 @@ Register new user to Password Manager.
 ### Request
 
 ``
-POST /api/user/register
+POST /api/v1/user/register
 ``
 `````json
 {
@@ -25,7 +25,7 @@ POST /api/user/register
 Request example:
 ````
 curl -X 'POST' 
-  '/api/User/register' 
+  '/api/v1/User/register' 
   -H 'accept: */*' 
   -H 'Content-Type: application/json' 
   -d '{
@@ -39,7 +39,7 @@ curl -X 'POST'
 HTTP/1.1 201 Created
 content-type: application/json; charset=utf-8 
 date: Thu,10 Aug 2023 20:58:24 GMT 
-location: /api/User/dc76cd13-ca29-45ab-a1c2-00ba5020476c 
+location: /api/v1/User/dc76cd13-ca29-45ab-a1c2-00ba5020476c 
 server: Kestrel 
 
 {
@@ -55,13 +55,13 @@ Activating account by clicking the link that is sent to contact address.
 
 ### Request
 ``
-GET /api/user/activate/{id}/{token}
+GET /api/v1/user/activate/{id}/{token}
 ``
 
 Request Example:
 ````
 curl -X 'GET' 
-  '/api/User/activate/dc76cd13-ca29-45ab-a1c2-00ba5020476c/A1BE039FD4E37DE93B766620FC25F3CE8DA82D61D0A5684B8B83B58420362932' 
+  '/api/v1/User/activate/dc76cd13-ca29-45ab-a1c2-00ba5020476c/A1BE039FD4E37DE93B766620FC25F3CE8DA82D61D0A5684B8B83B58420362932' 
   -H 'accept: */*'
 ````
 
@@ -79,7 +79,7 @@ Receive JWT token by providing correct email and password.
 
 ### Request
 ``
-POST /api/user/login
+POST /api/v1/user/login
 ``
 `````json
 {
@@ -91,7 +91,7 @@ POST /api/user/login
 Request Eample:
 ````
 curl -X 'POST' 
-  '/api/User/login' 
+  '/api/v1/User/login' 
   -H 'accept: */*' 
   -H 'Content-Type: application/json' 
   -d '{
@@ -113,3 +113,51 @@ server: Kestrel
 }
 
 ````
+
+## Save Username and Password
+### Request
+``
+POST /api/v1/logininformation
+``
+````json
+{
+  "userName": "encrypted-username",
+  "password": "encrpted-password",
+  "domain": "domain",
+  "saltHexString": "f984451d917f44df86169f91c83a8eacc7e400b088f4cb650076ed77fd012eaf",
+  "memorySize": 54,
+  "degreeOfParallelism": 1,
+  "iterations": 1
+}
+````
+
+Request Eample:
+````
+curl -X 'POST' 
+  '/api/v1/LoginInformation' 
+  -H 'accept: */*' 
+  -H 'Authorization: Bearer jwt-token 
+  -H 'Content-Type: application/json' 
+  -d '{
+  "userName": "encrypted-username",
+  "password": "encrpted-password",
+  "domain": "domain",
+  "saltHexString": "f984451d917f44df86169f91c83a8eacc7e400b088f4cb650076ed77fd012eaf",
+  "memorySize": 54,
+  "degreeOfParallelism": 1,
+  "iterations": 1
+}'
+````
+
+### Response
+````
+HTTP/1.1 200 OK
+content-type: application/json; charset=utf-8 
+date: Tue,15 Aug 2023 17:07:48 GMT 
+server: Kestrel 
+{
+  "domain": "string"
+}
+````
+
+

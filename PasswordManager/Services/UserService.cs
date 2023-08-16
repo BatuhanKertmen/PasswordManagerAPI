@@ -40,5 +40,21 @@ namespace PasswordManager.Services
 
             return user;
         }
+
+        public async Task<User> GetUserAsync(Guid id)
+        {
+            var user = await _userRepository.GetAsync(id);
+            if (user == null)
+            {
+                throw new UserNotFoundException();
+            }
+
+            if (user.Active == false)
+            {
+                throw new AccountNotActivatedException();
+            }
+
+            return user;
+        }
     }
 }

@@ -11,5 +11,6 @@ namespace PasswordManager.Repositories
         Task<User> SaveAsync(User email);
         Task<User?> ActivateAccountAsync(Guid userId);
         Task<User?> GetAsync(string address);
+        Task<User?> GetAsync(Guid id);
     }
 }
