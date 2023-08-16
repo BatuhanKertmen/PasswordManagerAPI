@@ -35,6 +35,7 @@ public class BuilderServices
         builder.Services.AddTransient<ICommunicationChannel, Mail>();
         builder.Services.AddTransient<IJwtService, JwtService>();
         
+        builder.Services.AddHttpContextAccessor();
         builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
                 options.TokenValidationParameters = new TokenValidationParameters
