@@ -29,7 +29,7 @@ public class LoginInformationFacade
         _mapper = mapper;
     }
 
-    public async Task<LoginInformationResponseDto> SaveAsync(HttpRequest request, LoginInformationRequestDto data)
+    public async Task<AddLoginInformationResponseDto> SaveAsync(HttpRequest request, AddLoginInformationRequestDto data)
     {
         var userId = _jwtService.GetUserId(request.Headers[HeaderNames.Authorization]);
         var user = await _userService.GetUserAsync(userId);
@@ -47,6 +47,14 @@ public class LoginInformationFacade
         loginInformation.LoginInformationPassword = loginInformationPassword;
         await _loginInformationPasswordService.SaveAsync(loginInformationPassword);
 
-        return _mapper.Map<LoginInformationResponseDto>(loginInformation);
+        return _mapper.Map<AddLoginInformationResponseDto>(loginInformation);
+    }
+
+    public async Task<IEnumerable<GetLoginInformationResponseDto>> GetAllByDomainAsync(GetLoginInformationRequestDto request)
+    {
+        var informationList = await _loginInformationService.GelAllByDomainAsync(request.Domain);
+        return informationList
+            .Select(item => _mapper.Map<GetLoginInformationResponseDto>(item))
+            .ToList();
     }
 }

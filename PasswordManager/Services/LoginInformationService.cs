@@ -17,4 +17,9 @@ public class LoginInformationService : ILoginInformationService
         loginInformation = await _loginInformationRepository.SaveAsync(loginInformation);
         return loginInformation;
     }
+
+    public async Task<IEnumerable<LoginInformation>> GelAllByDomainAsync(string domain)
+    {
+        return await _loginInformationRepository.GetAllByDomainAsync(domain);
+    }
 }

@@ -23,10 +23,28 @@ public class LoginInformationController : ControllerBase
 
 
     [HttpPost]
-    public async Task<IActionResult> SaveAsync([FromBody] LoginInformationRequestDto request)
+    public async Task<IActionResult> SaveAsync([FromBody] AddLoginInformationRequestDto request)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+        
         var response = await _loginInformationFacade.SaveAsync(Request, request);
         
+        return Ok(response);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAllByDomainAsync([FromQuery] GetLoginInformationRequestDto request)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+        
+        var response = await _loginInformationFacade.GetAllByDomainAsync(request);
+
         return Ok(response);
     }
 }

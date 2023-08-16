@@ -160,4 +160,34 @@ server: Kestrel
 }
 ````
 
+## Get username and password by domain
+### Request
+``
+GET /api/v1/LoginInformation?Domain=domain-name
+``
 
+Request Example:
+````
+curl -X 'GET' \
+  '/api/v1/LoginInformation?Domain=domain-name'
+  -H 'accept: */*' 
+  -H 'Authorization: Bearer jwt-token'
+````
+
+### Response
+````
+HTTP/1.1 200 OK
+content-type: application/json; charset=utf-8
+date: Wed,16 Aug 2023 08:36:50 GMT
+server: Kestrel
+[
+  {
+    "usernameEncrypted": "string",
+    "passwordEncrypted": "string",
+    "saltHexString": "ABCDEFABCDEFABCDEFABCDEFABCDEFABCDEFABCDEFABCDEFABCDEFABCDEF1111",
+    "memorySize": 1024,
+    "degreeOfParallelism": 32,
+    "iterations": 32
+  }
+]
+````
