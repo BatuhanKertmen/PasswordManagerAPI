@@ -55,13 +55,13 @@ Activating account by clicking the link that is sent to contact address.
 
 ### Request
 ``
-GET /api/v1/user/activate/{id}/{token}
+GET /api/v1/user/activate/?id=user-id&securityToken=security-token
 ``
 
 Request Example:
 ````
-curl -X 'GET' 
-  '/api/v1/User/activate/dc76cd13-ca29-45ab-a1c2-00ba5020476c/A1BE039FD4E37DE93B766620FC25F3CE8DA82D61D0A5684B8B83B58420362932' 
+curl -X 'GET' \
+  '/api/v1/User/activate?id=0b7ca6b8-005d-4d80-b9b7-836122fe4133&securityToken=671C496538F60D0EA6C1D60F65A8DC43486D987EDD8EDFB86F3CA853E171492A' \
   -H 'accept: */*'
 ````
 
