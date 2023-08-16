@@ -2,7 +2,7 @@
 
 namespace PasswordManager.DTO;
 
-public class LoginInformationResponseDto
+public class AddLoginInformationResponseDto
 {
     [Required]
     public string Domain { get; set; }
