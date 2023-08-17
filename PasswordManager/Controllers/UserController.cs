@@ -45,8 +45,9 @@ namespace PasswordManager.Controllers
             return Ok(response);
         }
 
-        [HttpGet("activate/{id:guid}/{securityToken}")]
-        public async Task<IActionResult> ActivateAccount([FromRoute] Guid id, [FromRoute] string securityToken)
+        [HttpGet]
+        [Route("activate")]
+        public async Task<IActionResult> ActivateAccount([FromQuery] Guid id, [FromQuery] string securityToken)
         {
             var successful = await _userActionsFacade.ActivateAccountAsync(id, securityToken);
             if (!successful)

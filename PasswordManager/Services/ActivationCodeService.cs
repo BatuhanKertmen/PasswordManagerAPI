@@ -1,5 +1,6 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
+using Microsoft.AspNetCore.Mvc;
 using PasswordManager.Communications;
 using PasswordManager.Models;
 using PasswordManager.Repositories;
@@ -12,13 +13,24 @@ namespace PasswordManager.Services
         private readonly IUserRepository _userRepository;
         private readonly ICommunicationChannel _communicationChannel;
         private readonly IConfiguration _configuration;
+        private readonly IHttpContextAccessor _accessor;
+        private readonly LinkGenerator _generator;
 
-        public ActivationCodeService(IActivationCodeRepository activationCodeRepository, IConfiguration configuration, ICommunicationChannel communicationChannel, IUserRepository userRepository)
+
+        public ActivationCodeService(
+            IActivationCodeRepository activationCodeRepository, 
+            IConfiguration configuration, 
+            ICommunicationChannel communicationChannel, 
+            IUserRepository userRepository, 
+            IHttpContextAccessor accessor, 
+            LinkGenerator generator)
         {
             _activationCodeRepository = activationCodeRepository;
             _configuration = configuration;
             _communicationChannel = communicationChannel;
             _userRepository = userRepository;
+            _accessor = accessor;
+            _generator = generator;
         }
 
         public async Task<bool> ActivateAccountAsync(Guid userId, string securityToken)
@@ -53,8 +65,12 @@ namespace PasswordManager.Services
             };
 
             await _activationCodeRepository.SaveAsync(activationCode);
-            
-            var activationLink = $"https://localhost:7186/api/v1/user/activate/{user.Id}/{securityToken}";
+
+            var activationLink = _generator.GetUriByAction(
+                _accessor.HttpContext,
+                "ActivateAccount",
+                "user",
+                values: new { id = user.Id, securityToken = securityToken });
             var mailTemplate = LoadMailTemplate(activationLink);
 
 
