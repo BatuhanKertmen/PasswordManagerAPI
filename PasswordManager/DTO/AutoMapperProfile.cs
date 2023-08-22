@@ -13,6 +13,14 @@ public class AutoMapperProfile : Profile
             .ForMember(dest => dest.Created, opt => opt.MapFrom(_ => DateTime.UtcNow))
             .ForMember(dest => dest.LastUpdated, opt => opt.MapFrom(_ => DateTime.UtcNow))
             .ForMember(dest => dest.UserPassword, opt => opt.Ignore());
+
+        CreateMap<UserRegisterRequestDto, UserPassword>()
+            .ForMember(dest => dest.MemorySize, opt => opt.MapFrom(src => src.MemorySize))
+            .ForMember(dest => dest.Iterations, opt => opt.MapFrom(src => src.Iterations))
+            .ForMember(dest => dest.Salt, opt => opt.MapFrom(src => Convert.FromHexString(src.SaltHexString)))
+            .ForMember(dest => dest.DegreeOfParallism, opt => opt.MapFrom(src => src.DegreeOfParallelism));
+            
+            
         
         CreateMap<User, UserRegisterResponseDto>();
 
