@@ -34,7 +34,7 @@ namespace PasswordManager.Facades
         public async Task<UserRegisterResponseDto> RegisterAsync(UserRegisterRequestDto request)
         {
             var user = await _userService.RegisterAsync(_mapper.Map<User>(request));
-            await _userPasswordService.SaveAsync(request.Password, user);
+            await _userPasswordService.SaveAsync(request.PasswordHexString, _mapper.Map<UserPassword>(request), user);
 
             await _activationCodeService.SendActivationCode(user);
 

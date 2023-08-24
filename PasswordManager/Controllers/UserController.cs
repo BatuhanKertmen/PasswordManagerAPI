@@ -25,9 +25,9 @@ namespace PasswordManager.Controllers
             
             var response = await _userActionsFacade.RegisterAsync(request);
 
-            return CreatedAtAction(
-                nameof(GetUser),
-                new { id = response.Id },
+            return CreatedAtRoute(
+                "",
+                null,
                 response
             );
         }
@@ -56,12 +56,6 @@ namespace PasswordManager.Controllers
             }
 
             return Ok();
-        }
-        
-        [HttpGet("{id:guid}")]
-        public IActionResult GetUser(Guid id)
-        {
-            throw new NotImplementedException();
         }
     }
 }
