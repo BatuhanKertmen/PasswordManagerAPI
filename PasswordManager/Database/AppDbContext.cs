@@ -6,15 +6,18 @@ namespace PasswordManager.Database
     public class AppDbContext : DbContext
     {
         private readonly IConfiguration _configuration;
-
-        public AppDbContext(IConfiguration configuration)
+        public AppDbContext(DbContextOptions<AppDbContext> options, IConfiguration configuration) : base(options)
         {
             _configuration = configuration;
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseNpgsql(_configuration.GetConnectionString("PostgresConnectionString"));
+            if (optionsBuilder.IsConfigured == false)
+            {
+                optionsBuilder.UseNpgsql(_configuration.GetConnectionString("PostgresConnectionString"));
+                base.OnConfiguring(optionsBuilder);
+            }
         }
 
         public DbSet<User> Users { get; set; }
