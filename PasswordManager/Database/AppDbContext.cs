@@ -1,23 +1,34 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PasswordManager.Exceptions;
 using PasswordManager.Models;
+using PasswordManager.Secrets;
 
 namespace PasswordManager.Database
 {
     public class AppDbContext : DbContext
     {
-        private readonly IConfiguration _configuration;
-        public AppDbContext(DbContextOptions<AppDbContext> options, IConfiguration configuration) : base(options)
+        private readonly ISecretManager _secretManager;
+        
+        public AppDbContext(DbContextOptions<AppDbContext> options, ISecretManager secretManager) : base(options)
         {
-            _configuration = configuration;
+            _secretManager = secretManager;
         }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        protected override async void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            if (optionsBuilder.IsConfigured == false)
+            if (optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseNpgsql(_configuration.GetConnectionString("PostgresConnectionString"));
-                base.OnConfiguring(optionsBuilder);
+                return;
             }
+            
+            var connectionString = await _secretManager.GetPasswordManagerDatabaseConnectionString();
+            if (connectionString == null)
+            {
+                throw new SecretNotAvailableException();
+            }
+                
+            optionsBuilder.UseNpgsql(connectionString);
+            base.OnConfiguring(optionsBuilder);
         }
 
         public DbSet<User> Users { get; set; }
