@@ -401,3 +401,4 @@ FodyWeavers.xsd
 
 # Secrets
 *appsettings.*json
+PasswordManager.Secrets/Secrets.json
