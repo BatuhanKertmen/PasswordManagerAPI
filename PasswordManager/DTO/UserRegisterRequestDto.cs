@@ -17,7 +17,6 @@ public class UserRegisterRequestDto
     public string SaltHexString { get; set; }
     
     [Required]
-    [Range(1,1024, ErrorMessage = "Given Memory size is not in the accepted range")]
     public int MemorySize { get; set; }
 
     [Required]

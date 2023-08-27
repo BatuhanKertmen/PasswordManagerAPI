@@ -3,33 +3,32 @@ using PasswordManager.Models;
 using PasswordManager.Repositories;
 using System.Security.Cryptography;
 using PasswordManager.Exceptions;
+using PasswordManager.Secrets;
 
 namespace PasswordManager.Services
 {
     public class UserPasswordService : IUserPasswordService
     {
-        private readonly IConfiguration _configuration;
+        private readonly ISecretManager _secretManager;
         private readonly IUserPasswordRepository _userPasswordRepository;
 
-        public UserPasswordService(IConfiguration configuration, IUserPasswordRepository userPasswordRepository)
+        public UserPasswordService(IUserPasswordRepository userPasswordRepository, ISecretManager secretManager)
         {
-            _configuration = configuration;
+            _secretManager = secretManager;
             _userPasswordRepository = userPasswordRepository;
         }
 
         public async Task<UserPassword> SaveAsync(string passwordHexString, UserPassword userPassword, User passwordOwner)
         {
             var nonce = UtilityFunctions.GenerateRandomBytes(12);
-            var tag = new byte[16];
             userPassword.Nonce = nonce;
-            userPassword.Tag = tag;
-            
-            var encryptedHashedPassword = EncryptPassword(
+
+            var encryptPasswordOutput = EncryptPassword(
                 passwordHexString,
-                nonce,
-                out tag
+                nonce
             );
-            userPassword.Password = encryptedHashedPassword;
+            userPassword.Password = encryptPasswordOutput.EncryptedPassword;
+            userPassword.Tag = encryptPasswordOutput.Tag;
 
             userPassword.UserId = passwordOwner.Id;
             userPassword.User = passwordOwner;
@@ -38,23 +37,22 @@ namespace PasswordManager.Services
             return userPassword;
         }
 
-        public async Task<bool> CheckPassword(Guid userId, string password)
+        public async Task<bool> CheckPasswordAsync(Guid userId, string password)
         {
             var userPassword = await _userPasswordRepository.GetAsync(userId);
             if (userPassword == null)
             {
                 throw new UserPasswordNotFoundException();
             }
+            
+            var encryptPasswordOutput = EncryptPassword(password, userPassword);
 
-            var tag = new byte[16];
-            var encryptedHashedPassword = EncryptPassword(password, userPassword, out tag);
-
-            if (tag.SequenceEqual(userPassword.Tag) == false)
+            if (encryptPasswordOutput.Tag.SequenceEqual(userPassword.Tag) == false)
             {
                 return false;
             }
 
-            if (encryptedHashedPassword.SequenceEqual(userPassword.Password) == false) 
+            if (encryptPasswordOutput.EncryptedPassword.SequenceEqual(userPassword.Password) == false) 
             {
                 return false;
             }
@@ -62,31 +60,44 @@ namespace PasswordManager.Services
             return true;
         }
 
-        private byte[] EncryptPassword(string passwordHash, UserPassword userPassword, out byte[] tag)
+        private EncryptPasswordOutputWrapper EncryptPassword(string passwordHash, UserPassword userPassword)
         {
             return EncryptPassword(
                 passwordHash,
-                userPassword.Nonce,
-                out tag
+                userPassword.Nonce
             );
         }
 
-        private byte[] EncryptPassword(
+        private EncryptPasswordOutputWrapper EncryptPassword(
             string passwordHexString,
-            byte[] nonce,
-            out byte[] tag
+            byte[] nonce
         )
         {
             byte[] passwordHashBytes = Convert.FromHexString(passwordHexString);
             var encryptedHashedPassword = new byte[passwordHashBytes.Length];
-            tag = new byte[16];
+            var tag = new byte[16];
 
-            using var aes = new AesGcm(Convert.FromHexString(_configuration.GetValue<string>("pepper:key")));
+            var privateKey = _secretManager.GetPepperSymmetricKey();
+            if (privateKey == null)
+            {
+                throw new SecretNotAvailableException();
+            }
+            using var aes = new AesGcm(privateKey);
             {
                 aes.Encrypt(nonce, passwordHashBytes, encryptedHashedPassword, tag);
             }
 
-            return encryptedHashedPassword;
+            return new EncryptPasswordOutputWrapper
+            {
+                Tag = tag,
+                EncryptedPassword = encryptedHashedPassword
+            };
         }
+    }
+
+    public class EncryptPasswordOutputWrapper
+    {
+        public byte[] EncryptedPassword { get; init; }
+        public byte[] Tag { get; init; }
     }
 }

@@ -1,8 +1,7 @@
-﻿using PasswordManager.Database;
-using PasswordManager.Models;
-using PasswordManager.Services;
+﻿using PasswordManager.Models;
+using PasswordManager.Repositories;
 
-namespace PasswordManager.Repositories;
+namespace PasswordManager.Services;
 
 public class LoginInformationPasswordService : ILoginInformationPasswordService
 {

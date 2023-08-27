@@ -14,20 +14,18 @@ namespace PasswordManager.Database
             _secretManager = secretManager;
         }
 
-        protected override async void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            if (optionsBuilder.IsConfigured)
+            if (optionsBuilder.IsConfigured == false)
             {
-                return;
-            }
-            
-            var connectionString = await _secretManager.GetPasswordManagerDatabaseConnectionString();
-            if (connectionString == null)
-            {
-                throw new SecretNotAvailableException();
-            }
+                var connectionString = _secretManager.GetPasswordManagerDatabaseConnectionString();
+                if (connectionString == null)
+                {
+                    throw new SecretNotAvailableException();
+                }
                 
-            optionsBuilder.UseNpgsql(connectionString);
+                optionsBuilder.UseNpgsql(connectionString);
+            }
             base.OnConfiguring(optionsBuilder);
         }
 

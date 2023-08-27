@@ -5,7 +5,7 @@ namespace PasswordManager
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            BuilderServices.RegisterServices(builder);
+            ServiceBuilder.RegisterServices(builder);
 
             var app = builder.Build();
             Pipeline.RegisterPipeline(app);

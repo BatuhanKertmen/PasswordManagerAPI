@@ -18,7 +18,7 @@ public class AutoMapperProfile : Profile
             .ForMember(dest => dest.MemorySize, opt => opt.MapFrom(src => src.MemorySize))
             .ForMember(dest => dest.Iterations, opt => opt.MapFrom(src => src.Iterations))
             .ForMember(dest => dest.Salt, opt => opt.MapFrom(src => Convert.FromHexString(src.SaltHexString)))
-            .ForMember(dest => dest.DegreeOfParallism, opt => opt.MapFrom(src => src.DegreeOfParallelism));
+            .ForMember(dest => dest.DegreeOfParallelism, opt => opt.MapFrom(src => src.DegreeOfParallelism));
             
             
         

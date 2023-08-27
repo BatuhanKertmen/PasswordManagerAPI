@@ -5,13 +5,14 @@ namespace PasswordManager.Secrets;
 
 public interface ISecretManager
 {
-    public Task<string?> GetPasswordManagerDatabaseConnectionString();
+    public string? GetPasswordManagerDatabaseConnectionString();
     
-    public Task<byte[]?> GetPepperSymmetricKey();
+    public byte[]? GetPepperSymmetricKey();
 
-    public Task<byte[]?> GetHmacPrivateKey();
+    public byte[]? GetHmacPrivateKey();
 
-    public Task<JwtInfo?> GetJwtInfo();
+    public JwtInfo? GetJwtInfo();
+    public byte[]? GetJwtKey();
 
-    public Task<MailInfo?> GetMailInfo();
+    public MailInfo? GetMailInfo();
 }
