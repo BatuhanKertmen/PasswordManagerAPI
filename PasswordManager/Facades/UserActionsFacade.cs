@@ -49,7 +49,7 @@ namespace PasswordManager.Facades
         public async Task<UserLoginResponseDto> LoginAsync(UserLoginRequestDto request)
         {
             var user = await _userService.GetUserAsync(request.CommunicationAddress);
-            var isPasswordCorrect = await _userPasswordService.CheckPassword(user.Id, request.Password);
+            var isPasswordCorrect = await _userPasswordService.CheckPasswordAsync(user.Id, request.Password);
 
             if (isPasswordCorrect == false)
             {
