@@ -9,7 +9,7 @@ namespace PasswordManager.Models
         public byte[] Password { get; set; }
         public byte[] Salt { get; set; }
         public int MemorySize { get; set; }
-        public int DegreeOfParallism { get; set; }
+        public int DegreeOfParallelism { get; set; }
         public int Iterations { get; set; }
         public byte[] Nonce { get; set; }
         public byte[] Tag { get; set; }
