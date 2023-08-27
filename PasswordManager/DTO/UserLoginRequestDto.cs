@@ -9,9 +9,6 @@ public class UserLoginRequestDto
     public string CommunicationAddress { get; set; }
     
     [Required(ErrorMessage = "Password is required")]
-    [StringLength(64, MinimumLength = 8, ErrorMessage = "Password must be between 8 and 64 characters")]
-    [RegularExpression(@"^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$", 
-        ErrorMessage = "Password must contain at least one letter, one number, and one special character")]
-    [DataType(DataType.Password)]
+    [RegularExpression("[a-zA-Z0-9]{256}", ErrorMessage = "Password 128 byte hex-string")]
     public string Password { get; set; }
 }
