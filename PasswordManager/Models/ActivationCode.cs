@@ -10,6 +10,7 @@ namespace PasswordManager.Models
         public DateTime ExpiryDate { get; set; }
         public DateTime Created { get; set; }
 
+        public Guid UserId { get; set; }
         public User User { get; set; }
     }
 }
