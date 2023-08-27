@@ -20,7 +20,7 @@ public class LoginInformationRepository : ILoginInformationRepository
         return loginInformation;
     }
 
-    public async Task<IEnumerable<LoginInformation>> GetAllByDomainAsync(string domain)
+    public async Task<List<LoginInformation>> GetAllByDomainAsync(string domain)
     {
         return await _context.LoginInformation.Where(info => info.Domain == domain)
             .Include(info => info.LoginInformationPassword)

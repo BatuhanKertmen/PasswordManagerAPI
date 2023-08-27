@@ -18,7 +18,7 @@ public class LoginInformationService : ILoginInformationService
         return loginInformation;
     }
 
-    public async Task<IEnumerable<LoginInformation>> GelAllByDomainAsync(string domain)
+    public async Task<List<LoginInformation>> GelAllByDomainAsync(string domain)
     {
         return await _loginInformationRepository.GetAllByDomainAsync(domain);
     }
