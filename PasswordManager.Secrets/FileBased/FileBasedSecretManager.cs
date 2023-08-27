@@ -1,44 +1,50 @@
-﻿using System.Net.Http.Json;
-using System.Text.Json;
+﻿using System.Text.Json;
 
 namespace PasswordManager.Secrets.FileBased;
 
-class FileBasedSecretManager : ISecretManager
+public class FileBasedSecretManager : ISecretManager
 {
-    private readonly string _secretFile = "PasswordManager.Secrets/FileBased/Secrets.json";
-    private async Task<SecretModel?> ParseJsonFile()
+    private const string SecretFile = "../PasswordManager.Secrets/FileBased/Secrets.json";
+
+    private SecretModel? ParseJsonFile()
     {
-        await using var stream = File.OpenRead(_secretFile);
-        return await JsonSerializer.DeserializeAsync<SecretModel>(stream);
+        using var stream = File.OpenRead(SecretFile);
+        return JsonSerializer.Deserialize<SecretModel>(stream);
     }
     
-    public async Task<string?> GetPasswordManagerDatabaseConnectionString()
+    public string? GetPasswordManagerDatabaseConnectionString()
     {
-        var secrets = await ParseJsonFile();
+        var secrets = ParseJsonFile();
         return secrets?.DatabaseConnectionString;
     }
 
-    public async Task<byte[]?> GetPepperSymmetricKey()
+    public byte[]? GetPepperSymmetricKey()
     {
-        var secrets = await ParseJsonFile();
+        var secrets = ParseJsonFile();
         return secrets?.PepperKey != null ? Convert.FromHexString(secrets.PepperKey) : null;
     }
 
-    public async Task<byte[]?> GetHmacPrivateKey()
+    public byte[]? GetHmacPrivateKey()
     {
-        var secrets = await ParseJsonFile();
+        var secrets = ParseJsonFile();
         return secrets?.PepperKey != null ? Convert.FromHexString(secrets.HmacKey) : null;
     }
 
-    public async Task<JwtInfo?> GetJwtInfo()
+    public JwtInfo? GetJwtInfo()
     {
-        var secrets = await ParseJsonFile();
+        var secrets = ParseJsonFile();
         return secrets?.JwtInfo;
     }
 
-    public async Task<MailInfo?> GetMailInfo()
+    public byte[]? GetJwtKey()
     {
-        var secrets = await ParseJsonFile();
+        var secret = ParseJsonFile();
+        return secret != null ? Convert.FromHexString(secret.JwtInfo.JwtKeyHexString) : null;
+    }
+
+    public MailInfo? GetMailInfo()
+    {
+        var secrets = ParseJsonFile();
         return secrets?.MailInfo;
     }
 }
