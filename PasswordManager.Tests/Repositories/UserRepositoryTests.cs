@@ -2,7 +2,7 @@
 
 public class UserRepositoryTests
 {
-    private readonly IConfigurationRoot _configuration;
+    private readonly ISecretManager _secretManager;
     private readonly DbContextOptions<AppDbContext> _options;
     private readonly User _user;
     private readonly User _inactiveUser;
@@ -12,11 +12,7 @@ public class UserRepositoryTests
     
     public UserRepositoryTests()
     {
-        _configuration = new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string>
-            {
-                { "key", "value" }
-            }).Build();
+        _secretManager = new Mock<ISecretManager>().Object;
         
         _options = new DbContextOptionsBuilder<AppDbContext>()
             .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
@@ -48,21 +44,18 @@ public class UserRepositoryTests
     [Fact]
     public async Task CheckCommunicationAddressExistsAsync_EmailExists_ReturnsTrue()
     {
-        // Arrange
-        using (var context = new AppDbContext(_options, _configuration))
+        using (var context = new AppDbContext(_options, _secretManager))
         {
             await context.Users.AddAsync(_user);
             await context.SaveChangesAsync();
         }
 
-        using (var context = new AppDbContext(_options, _configuration))
+        using (var context = new AppDbContext(_options, _secretManager))
         {
             var userRepository = new UserRepository(context);
-
-            // Act
+            
             var exists = await userRepository.CheckCommunicationAddressExistsAsync(_user.CommunicationAddress);
-
-            // Assert
+            
             Assert.True(exists);
         }
     }
@@ -70,14 +63,12 @@ public class UserRepositoryTests
     [Fact]
     public async Task CheckCommunicationAddressExistsAsync_EmailDoesNotExist_ReturnsFalse()
     {
-        using (var context = new AppDbContext(_options, _configuration))
+        using (var context = new AppDbContext(_options, _secretManager))
         {
             var userRepository = new UserRepository(context);
 
-            // Act
             var exists = await userRepository.CheckCommunicationAddressExistsAsync(_nonExistingEmail);
 
-            // Assert
             Assert.False(exists);
         }
     }
@@ -85,7 +76,7 @@ public class UserRepositoryTests
     [Fact]
     public async Task SaveAsync_ValidUser_ReturnsSavedUser()
     {
-        using (var context = new AppDbContext(_options, _configuration))
+        using (var context = new AppDbContext(_options, _secretManager))
         {
             var sut = new UserRepository(context);
             
@@ -99,13 +90,13 @@ public class UserRepositoryTests
     [Fact]
     public async Task ActivateAccountAsync_InactiveUser_ReturnsActivatedUser()
     {
-        using (var context = new AppDbContext(_options, _configuration))
+        using (var context = new AppDbContext(_options, _secretManager))
         {
             await context.Users.AddAsync(_inactiveUser);
             await context.SaveChangesAsync();
         }
 
-        using (var context = new AppDbContext(_options, _configuration))
+        using (var context = new AppDbContext(_options, _secretManager))
         {
             var sut = new UserRepository(context);
 
@@ -121,13 +112,13 @@ public class UserRepositoryTests
     [Fact]
     public async Task ActivateAccountAsync_ActiveUser_ReturnsNull()
     {
-        using (var context = new AppDbContext(_options, _configuration))
+        using (var context = new AppDbContext(_options, _secretManager))
         {
             await context.Users.AddAsync(_activeuser);
             await context.SaveChangesAsync();
         }
 
-        using (var context = new AppDbContext(_options, _configuration))
+        using (var context = new AppDbContext(_options, _secretManager))
         {
             var sut = new UserRepository(context);
             
@@ -140,13 +131,13 @@ public class UserRepositoryTests
     [Fact]
     public async Task GetAsync_ByAddress_UserExists_ReturnsUser()
     {
-        using (var context = new AppDbContext(_options, _configuration))
+        using (var context = new AppDbContext(_options, _secretManager))
         {
             await context.Users.AddAsync(_user);
             await context.SaveChangesAsync();
         }
 
-        using (var context = new AppDbContext(_options, _configuration))
+        using (var context = new AppDbContext(_options, _secretManager))
         {
             var sut = new UserRepository(context);
             
@@ -160,7 +151,7 @@ public class UserRepositoryTests
     [Fact]
     public async Task GetAsync_ByAddress_UserDoesNotExist_ReturnsNull()
     {
-        using (var context = new AppDbContext(_options, _configuration))
+        using (var context = new AppDbContext(_options, _secretManager))
         {
             var sut = new UserRepository(context);
             
@@ -173,13 +164,13 @@ public class UserRepositoryTests
     [Fact]
     public async Task GetAsync_ById_UserExists_ReturnsUser()
     {
-        using (var context = new AppDbContext(_options, _configuration))
+        using (var context = new AppDbContext(_options, _secretManager))
         {
             await context.Users.AddAsync(_user);
             await context.SaveChangesAsync();
         }
 
-        using (var context = new AppDbContext(_options, _configuration))
+        using (var context = new AppDbContext(_options, _secretManager))
         {
             var sut = new UserRepository(context);
             
@@ -193,13 +184,12 @@ public class UserRepositoryTests
     [Fact]
     public async Task GetAsync_ById_UserDoesNotExist_ReturnsNull()
     {
-        using (var context = new AppDbContext(_options, _configuration))
+        await using (var context = new AppDbContext(_options, _secretManager))
         {
             var sut = new UserRepository(context);
             
             var user = await sut.GetAsync(_user.Id);
-
-            // Assert
+            
             Assert.Null(user);
         }
     }
