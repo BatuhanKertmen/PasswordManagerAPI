@@ -1,6 +1,4 @@
-﻿
-
-namespace PasswordManager.Tests.Facades;
+﻿namespace PasswordManager.Tests.Facades;
 
 public class UserActionsFacadeTests
 {
@@ -78,7 +76,7 @@ public class UserActionsFacadeTests
     [Fact]
     public async Task LoginAsync_IncorrectPassword_ThrowsEmailOrPasswordIsIncorrectException()
     {
-        _userPasswordServiceMock.Setup(u => u.CheckPassword(It.IsAny<Guid>(), It.IsAny<string>())).ReturnsAsync(false);
+        _userPasswordServiceMock.Setup(u => u.CheckPasswordAsync(It.IsAny<Guid>(), It.IsAny<string>())).ReturnsAsync(false);
         _userServiceMock.Setup(u => u.GetUserAsync(It.IsAny<string>())).ReturnsAsync(_registeredUser);
         
         var sut = new UserActionsFacade(
@@ -98,7 +96,7 @@ public class UserActionsFacadeTests
         var jwtToken = "valid-jwt-token";
 
         _userServiceMock.Setup(u => u.GetUserAsync(It.IsAny<string>())).ReturnsAsync(_registeredUser);
-        _userPasswordServiceMock.Setup(u => u.CheckPassword(It.IsAny<Guid>(), It.IsAny<string>())).ReturnsAsync(true);
+        _userPasswordServiceMock.Setup(u => u.CheckPasswordAsync(It.IsAny<Guid>(), It.IsAny<string>())).ReturnsAsync(true);
         _jwtServiceMock.Setup(j => j.CreateJwtToken(It.IsAny<User>())).Returns(jwtToken);
         _mapperMock.Setup(m => m.Map<UserLoginResponseDto>(jwtToken)).Returns(_userLoginResponseDto);
 
@@ -114,7 +112,7 @@ public class UserActionsFacadeTests
         // Assert
         Assert.Equal(_userLoginResponseDto, result);
         _userServiceMock.Verify(u => u.GetUserAsync(It.IsAny<string>()), Times.Once);
-        _userPasswordServiceMock.Verify(u => u.CheckPassword(It.IsAny<Guid>(), It.IsAny<string>()), Times.Once);
+        _userPasswordServiceMock.Verify(u => u.CheckPasswordAsync(It.IsAny<Guid>(), It.IsAny<string>()), Times.Once);
         _jwtServiceMock.Verify(j => j.CreateJwtToken(It.IsAny<User>()), Times.Once);
         _mapperMock.Verify(m => m.Map<UserLoginResponseDto>(jwtToken), Times.Once);
     }
