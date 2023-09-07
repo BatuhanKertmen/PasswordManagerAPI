@@ -62,6 +62,26 @@ namespace PasswordManager.Middlewares
                     e.StackTrace
                 );
             }
+            catch (SecretNotAvailableException e)
+            {
+                UpdateHttpContext(
+                    context,
+                    (int)HttpStatusCode.ServiceUnavailable,
+                    ServerError,
+                    "Server Can Not Reach Secrets",
+                    e.StackTrace
+                );
+            }
+            catch (UserNotFoundException e)
+            {
+                UpdateHttpContext(
+                    context,
+                    (int)HttpStatusCode.InternalServerError,
+                    ServerError,
+                    "User Not Found",
+                    e.StackTrace
+                );
+            }
             /*
             catch (Exception e)
             {
@@ -92,6 +112,4 @@ namespace PasswordManager.Middlewares
             await context.Response.WriteAsync(problemJson);
         }
     }
-
-    
 }
