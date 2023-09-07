@@ -22,6 +22,15 @@ public static class ServiceBuilder
         builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         builder.Services.AddDbContext<AppDbContext>(options => 
             options.UseNpgsql(builder.Configuration["ConnectionStrings:PostgresDatabase"]));
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy(name: "CORS",
+                policy =>
+                {
+                    policy.AllowAnyOrigin();
+                });
+        });
+        
         builder.Services.AddTransient<UserActionsFacade>();
         builder.Services.AddTransient<LoginInformationFacade>();
         builder.Services.AddTransient<GlobalExceptionHandler>();

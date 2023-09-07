@@ -14,6 +14,8 @@ public class Pipeline
 
         app.UseHttpsRedirection();
 
+        app.UseCors("CORS");
+        
         app.UseAuthentication();
         app.UseAuthorization();
                 
