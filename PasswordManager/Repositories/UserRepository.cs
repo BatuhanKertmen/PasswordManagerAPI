@@ -42,12 +42,16 @@ namespace PasswordManager.Repositories
 
         public async Task<User?> GetAsync(string address)
         {
-            return await _context.Users.FirstOrDefaultAsync(x => x.CommunicationAddress == address);
+            return await _context.Users
+                .Include(user => user.UserPassword)
+                .FirstOrDefaultAsync(user => user.CommunicationAddress == address) ;
         }
 
         public async Task<User?> GetAsync(Guid id)
         {
-            return await _context.Users.FindAsync(id);
+            return await _context.Users
+                .Include(user => user.UserPassword)
+                .FirstOrDefaultAsync(user => user.Id == id) ;
         }
     }
 }

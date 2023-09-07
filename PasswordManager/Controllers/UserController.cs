@@ -22,7 +22,7 @@ namespace PasswordManager.Controllers
             {
                 return BadRequest(ModelState);
             }
-            
+
             var response = await _userActionsFacade.RegisterAsync(request);
 
             return CreatedAtRoute(
@@ -31,7 +31,7 @@ namespace PasswordManager.Controllers
                 response
             );
         }
-        
+
         [HttpPost("login")]
         public async Task<IActionResult> LoginAsync([FromBody] UserLoginRequestDto request)
         {
@@ -56,6 +56,13 @@ namespace PasswordManager.Controllers
             }
 
             return Ok();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetUserPasswordHashInfoAsync([FromQuery] string communicationAddress)
+        {
+            var userPasswordHashInfo = await _userActionsFacade.GetUserPasswordHashInfoAsync(communicationAddress);
+            return Ok(userPasswordHashInfo);
         }
     }
 }

@@ -59,5 +59,11 @@ namespace PasswordManager.Facades
             var token = _jwtService.CreateJwtToken(user);
             return _mapper.Map<UserLoginResponseDto>(token);
         }
+
+        public async Task<GetUserPasswordHashInfoResponseDto> GetUserPasswordHashInfoAsync(string communicationAddress)
+        {
+            var user = await _userService.GetUserAsync(communicationAddress);
+            return _mapper.Map<GetUserPasswordHashInfoResponseDto>(user.UserPassword);
+        }
     }
 }
