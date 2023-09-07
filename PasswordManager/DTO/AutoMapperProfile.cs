@@ -50,7 +50,7 @@ public class AutoMapperProfile : Profile
             .ForMember(dest => dest.Iterations, opt => opt.MapFrom(src => src.LoginInformationPassword.Iterations))
             .ForMember(dest => dest.DegreeOfParallelism, opt => opt.MapFrom(src => src.LoginInformationPassword.DegreeOfParallelism));
 
-
+        CreateMap<UserPassword, GetUserPasswordHashInfoResponseDto>();
 
     }   
 }
