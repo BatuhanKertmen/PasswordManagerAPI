@@ -114,6 +114,34 @@ server: Kestrel
 
 ````
 
+## Get User Password Hash Info
+### Request
+``
+/api/v1/User?communicationAddress=test@example.com
+``
+
+Request Example
+````
+curl -X 'GET' 
+  '/api/v1/User?communicationAddress=batuhankertmen%40sabanciuniv.edu' 
+  -H 'accept: */*'
+````
+### Response
+````
+HTTP/1.1 200 OK
+content-type: application/json; charset=utf-8 
+date: Thu,07 Sep 2023 20:05:18 GMT 
+server: Kestrel 
+{
+  "salt": "base-64-encoded-salt",
+  "memorySize": 1024,
+  "degreeOfParallelism": 1,
+  "iterations": 2
+}
+````
+
+
+
 ## Save Username and Password
 ### Request
 ``
