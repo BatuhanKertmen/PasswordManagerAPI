@@ -45,6 +45,12 @@
             <scope>compile</scope>
         </dependency>
 
+        <!-- Auth -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
         <!-- In-memory database -->
         <dependency>
             <groupId>org.liquibase</groupId>
