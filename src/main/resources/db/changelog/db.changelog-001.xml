@@ -6,7 +6,7 @@
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
 
-    <changeSet id="1" author="batuhan">
+    <changeSet id="1" author="Batuhan">
         <createTable tableName="users">
             <column name="username" type="varchar(50)" >
                 <constraints primaryKey="true" nullable="false"/>
@@ -14,10 +14,15 @@
             <column name="password" type="varchar(68)">
                 <constraints nullable="false"/>
             </column>
+            <column name="contact" type="varchar(64)">
+                <constraints nullable="false"/>
+            </column>
             <column name="enabled" type="boolean">
                 <constraints nullable="false"/>
             </column>
         </createTable>
+
+        <addUniqueConstraint tableName="users" columnNames="contact"/>
 
         <rollback>
             <dropTable tableName="users"/>
@@ -25,7 +30,7 @@
     </changeSet>
 
 
-    <changeSet id="2" author="batuhan">
+    <changeSet id="2" author="Batuhan">
         <createTable tableName="authorities">
             <column name="username" type="varchar(50)">
                 <constraints nullable="false"/>
@@ -35,12 +40,50 @@
             </column>
         </createTable>
 
-        <addUniqueConstraint tableName="authorities" columnNames="username, authority" constraintName="authorities_idx_1"/>
-        <addForeignKeyConstraint baseTableName="authorities" baseColumnNames="username" constraintName="authorities_ibfk_1"
-                                 referencedTableName="users" referencedColumnNames="username"/>
+        <addUniqueConstraint tableName="authorities"
+                             columnNames="username, authority"
+                             constraintName="authorities_uqc_1"/>
+
+        <addForeignKeyConstraint baseTableName="authorities"
+                                 baseColumnNames="username"
+                                 constraintName="authorities_fkc_1"
+                                 referencedTableName="users"
+                                 referencedColumnNames="username"/>
 
         <rollback>
             <dropTable tableName="authorities"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="3" author="Batuhan">
+        <createTable tableName="login_information">
+            <column name="id" type="int" autoIncrement="${autoIncrement}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="username" type="varchar(256)"/>
+            <column name="password" type="varchar(256)"/>
+            <column name="url" type="varchar(256)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="domain" type="varchar(67)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="login_information"
+                                 baseColumnNames="user"
+                                 constraintName="login_information_ibfx1"
+                                 referencedTableName="users"
+                                 referencedColumnNames="username"/>
+
+        <addUniqueConstraint tableName="login_information"
+                             columnNames="username, password, url"/>
+
+        <rollback>
+            <dropTable tableName="login_information"/>
         </rollback>
     </changeSet>
     
