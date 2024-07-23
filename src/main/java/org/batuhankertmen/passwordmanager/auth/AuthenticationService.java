@@ -1,6 +1,7 @@
 package org.batuhankertmen.passwordmanager.auth;
 
 import lombok.RequiredArgsConstructor;
+import org.batuhankertmen.passwordmanager.common.UserException;
 import org.batuhankertmen.passwordmanager.user.Role;
 import org.batuhankertmen.passwordmanager.user.User;
 import org.batuhankertmen.passwordmanager.user.UserRepository;
@@ -11,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +28,18 @@ public class AuthenticationService implements IAuthenticationService{
 
     @Override
     public AuthenticationResponseDto register(RegistryRequestDto request) {
+        List<User> existingUsers = userRepository.findByUsernameOrContact(request.getUsername(), request.getContact());
+        if (!existingUsers.isEmpty()) {
+            for (User user : existingUsers) {
+                if (user.getContact().equals(request.getContact())) {
+                    throw UserException.sameContactAlreadyExists();
+                }
+                if (user.getUsername().equals(request.getUsername())) {
+                    throw UserException.sameUsernameAlreadyExists();
+                }
+            }
+        }
+
         User user = User.builder()
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
@@ -37,6 +51,7 @@ public class AuthenticationService implements IAuthenticationService{
                 .createdAt(new Date(System.currentTimeMillis()))
                 .lastUpdatedAt(new Date(System.currentTimeMillis()))
                 .build();
+
 
         userRepository.save(user);
 

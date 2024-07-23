@@ -22,7 +22,7 @@ import java.util.List;
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
-    private long id;
+    private int id;
 
     @Column(unique=true, nullable=false)
     private String username;
@@ -37,6 +37,7 @@ public class User implements UserDetails {
 
     private String lastName;
 
+    @Column(unique=true)
     private String contact;
 
     private Date createdAt;
