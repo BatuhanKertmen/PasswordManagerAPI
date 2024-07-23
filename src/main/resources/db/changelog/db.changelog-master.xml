@@ -15,6 +15,5 @@
     <property name="double_type" value="DOUBLE" dbms="mysql"/>
 
     <include file="db.changelog-001.xml" relativeToChangelogFile="true"/>
-    <include file="db.changelog-002.sql" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
