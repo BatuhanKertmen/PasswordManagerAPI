@@ -1,6 +1,7 @@
 package org.batuhankertmen.passwordmanager.auth;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
@@ -56,6 +57,7 @@ public class JwtService implements IJwtService{
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expirationDuration))
+                .setIssuer(jwtIssuer)
                 .signWith(getJwtSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -72,7 +74,7 @@ public class JwtService implements IJwtService{
     }
 
 
-    private Claims extractAllClaims(String jwt) {
+    private Claims extractAllClaims(String jwt) throws ExpiredJwtException {
         return Jwts.parserBuilder()
                 .setSigningKey(getJwtSigningKey())
                 .build()

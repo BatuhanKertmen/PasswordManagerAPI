@@ -18,7 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AuthenticationService implements IAuthenticationService{
 
-    private final    JwtService jwtService;
+    private final JwtService jwtService;
 
     private final UserRepository userRepository;
 
