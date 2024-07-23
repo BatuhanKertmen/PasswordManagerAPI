@@ -8,8 +8,11 @@
 
     <changeSet id="1" author="batuhan">
         <createTable tableName="users">
-            <column name="username" type="varchar(50)" >
+            <column name="id" type="int" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="username" type="varchar(50)">
+                <constraints nullable="false"/>
             </column>
             <column name="password" type="varchar(68)">
                 <constraints nullable="false"/>
@@ -17,16 +20,27 @@
             <column name="enabled" type="boolean">
                 <constraints nullable="false"/>
             </column>
+            <column name="first_name" type="varchar(50)"/>
+            <column name="last_name" type="varchar(50)"/>
+            <column name="contact" type="varchar(50)"/>
+            <column name="created_at" type="date"/>
+            <column name="last_updated_at" type="date"/>
+            <column name="role" type="varchar(5)"/>
         </createTable>
+
+        <addUniqueConstraint tableName="users" columnNames="contact"/>
+        <addUniqueConstraint tableName="users" columnNames="username"/>
 
         <rollback>
             <dropTable tableName="users"/>
+            <dropUniqueConstraint tableName="users"/>
         </rollback>
     </changeSet>
 
 
+
     <changeSet id="2" author="batuhan">
-        <createTable tableName="authorities">
+        <createTable tableName="authority">
             <column name="username" type="varchar(50)">
                 <constraints nullable="false"/>
             </column>
@@ -35,12 +49,14 @@
             </column>
         </createTable>
 
-        <addUniqueConstraint tableName="authorities" columnNames="username, authority" constraintName="authorities_idx_1"/>
-        <addForeignKeyConstraint baseTableName="authorities" baseColumnNames="username" constraintName="authorities_ibfk_1"
+        <addUniqueConstraint tableName="authority" columnNames="username, authority" constraintName="authority_idx_1"/>
+        <addForeignKeyConstraint baseTableName="authority" baseColumnNames="username" constraintName="authority_ibfk_1"
                                  referencedTableName="users" referencedColumnNames="username"/>
 
         <rollback>
-            <dropTable tableName="authorities"/>
+            <dropTable tableName="authority"/>
+            <dropUniqueConstraint tableName="authority"/>
+            <dropAllForeignKeyConstraints baseTableName="authority"/>
         </rollback>
     </changeSet>
     
