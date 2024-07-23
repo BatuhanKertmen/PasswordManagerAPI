@@ -22,7 +22,9 @@
             </column>
             <column name="first_name" type="varchar(50)"/>
             <column name="last_name" type="varchar(50)"/>
-            <column name="contact" type="varchar(50)"/>
+            <column name="contact" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
             <column name="created_at" type="date"/>
             <column name="last_updated_at" type="date"/>
             <column name="role" type="varchar(5)"/>
