@@ -66,7 +66,7 @@ public class JwtServiceTest {
     public void testGenerateJwtToken() {
         when(userDetails.getUsername()).thenReturn("testuser");
 
-        String token = jwtService.generateJwtToken(userDetails);
+        String token = jwtService.generateAccessToken(userDetails);
 
         assertThat(token).isNotNull();
         assertThat(jwtService.extractUsername(token)).isEqualTo("testuser");
@@ -79,7 +79,7 @@ public class JwtServiceTest {
         Map<String, Object> extraClaims = new HashMap<>();
         extraClaims.put("role", "USER");
 
-        String token = jwtService.generateJwtToken(extraClaims, userDetails);
+        String token = jwtService.generateAccessToken(extraClaims, userDetails);
         assertThat(token).isNotNull();
 
         Optional<String> role =  Optional.ofNullable(jwtService.extractClaim(token, claims -> claims.get("role", String.class)));
@@ -93,7 +93,7 @@ public class JwtServiceTest {
     public void testIsJwtValid() {
         when(userDetails.getUsername()).thenReturn("testuser");
 
-        String token = jwtService.generateJwtToken(userDetails);
+        String token = jwtService.generateAccessToken(userDetails);
 
         boolean isValid = jwtService.isJwtValid(token, userDetails);
 

@@ -74,16 +74,16 @@ public class AuthenticationServiceTest {
                 .thenReturn(Collections.emptyList());
         when(passwordEncoder.encode(request.getPassword())).thenReturn("encodedPassword");
         when(userRepository.save(any(User.class))).thenReturn(user);
-        when(jwtService.generateJwtToken(any(User.class))).thenReturn("jwtToken");
+        when(jwtService.generateAccessToken(any(User.class))).thenReturn("jwtToken");
 
         AuthenticationResponseDto response = authenticationService.register(request);
 
         assertThat(response).isNotNull();
-        assertThat(response.getJwt()).isEqualTo("jwtToken");
+        assertThat(response.getAccessToken()).isEqualTo("jwtToken");
 
         verify(userRepository).findByUsernameOrContact(request.getUsername(), request.getContact());
         verify(userRepository).save(any(User.class));
-        verify(jwtService).generateJwtToken(any(User.class));
+        verify(jwtService).generateAccessToken(any(User.class));
     }
 
     @Test
@@ -149,17 +149,17 @@ public class AuthenticationServiceTest {
                 .build();
 
         when(userRepository.findByUsernameAndEnabledTrue(request.getUsername())).thenReturn(Optional.of(user));
-        when(jwtService.generateJwtToken(user)).thenReturn("jwtToken");
+        when(jwtService.generateAccessToken(user)).thenReturn("jwtToken");
         when(authManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(authentication);
 
         AuthenticationResponseDto response = authenticationService.authenticate(request);
 
         assertThat(response).isNotNull();
-        assertThat(response.getJwt()).isEqualTo("jwtToken");
+        assertThat(response.getAccessToken()).isEqualTo("jwtToken");
 
         verify(authManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
         verify(userRepository).findByUsernameAndEnabledTrue(request.getUsername());
-        verify(jwtService).generateJwtToken(user);
+        verify(jwtService).generateAccessToken(user);
     }
 
     @Test
@@ -177,6 +177,6 @@ public class AuthenticationServiceTest {
 
         verify(authManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
         verify(userRepository).findByUsernameAndEnabledTrue(request.getUsername());
-        verify(jwtService, never()).generateJwtToken(any(User.class));
+        verify(jwtService, never()).generateAccessToken(any(User.class));
     }
 }

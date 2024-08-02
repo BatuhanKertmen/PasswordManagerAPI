@@ -52,13 +52,40 @@
         </createTable>
 
         <addUniqueConstraint tableName="authority" columnNames="username, authority" constraintName="authority_idx_1"/>
-        <addForeignKeyConstraint baseTableName="authority" baseColumnNames="username" constraintName="authority_ibfk_1"
+        <addForeignKeyConstraint baseTableName="authority" baseColumnNames="username" constraintName="authority_fkc_1"
                                  referencedTableName="users" referencedColumnNames="username"/>
 
         <rollback>
-            <dropTable tableName="authority"/>
-            <dropUniqueConstraint tableName="authority"/>
             <dropAllForeignKeyConstraints baseTableName="authority"/>
+            <dropUniqueConstraint tableName="authority"/>
+            <dropTable tableName="authority"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="3" author="batuhan">
+        <createTable tableName="refresh_token">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="token" type="varchar(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_valid" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="refresh_token"
+                                 baseColumnNames="user_id"
+                                 constraintName="refresh_token_fkc_1"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+
+        <rollback>
+            <dropTable tableName="refresh_token"/>
         </rollback>
     </changeSet>
     

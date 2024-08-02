@@ -14,6 +14,7 @@ import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 
 @Service
@@ -25,8 +26,11 @@ public class JwtService implements IJwtService{
     @Value("${security.jwt.issuer}")
     private String jwtIssuer;
 
-    private final int expirationDuration = 1000 * 60 * 60; // 1 hour
+    @Value("${security.jwt.expiration}")
+    private long accessTokenExpirationDuration;
 
+    @Value("${security.jwt.refresh-token.expiration}")
+    private long refreshTokenExpirationDuration;
 
     @Override
     public String extractUsername(String jwt) {
@@ -46,20 +50,32 @@ public class JwtService implements IJwtService{
     }
 
     @Override
-    public String generateJwtToken(UserDetails userDetails) {
-        return generateJwtToken(new HashMap<>(), userDetails);
+    public String generateAccessToken(UserDetails userDetails) {
+        return generateAccessToken(new HashMap<>(), userDetails);
     }
 
     @Override
-    public String generateJwtToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+    public String generateAccessToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+        extraClaims.put("token_type", "accessToken");
+        return buildToken(extraClaims, userDetails, accessTokenExpirationDuration);
+    }
+
+    private String buildToken(Map<String, Object> extraClaims, UserDetails userDetails, long expiration) {
         return Jwts.builder()
                 .setClaims(extraClaims)
+                .claim("nonce", UUID.randomUUID().toString())
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + expirationDuration))
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .setIssuer(jwtIssuer)
                 .signWith(getJwtSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
+    }
+
+    public String generateRefreshToken(UserDetails userDetails) {
+        Map<String, Object> extraClaims = new HashMap<>();
+        extraClaims.put("token_type", "refreshToken");
+        return buildToken(extraClaims, userDetails, refreshTokenExpirationDuration);
     }
 
     @Override

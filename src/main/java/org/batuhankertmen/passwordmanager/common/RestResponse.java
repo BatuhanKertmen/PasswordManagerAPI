@@ -47,6 +47,14 @@ public class RestResponse {
                 .build();
     }
 
+    public static RestResponse unauthorized(ErrorType error, String message) {
+        return RestResponse.builder()
+                .status(HttpStatus.UNAUTHORIZED)
+                .error(error)
+                .message(message)
+                .build();
+    }
+
     public static RestResponse serverError(ErrorType error, String message) {
         return RestResponse.builder()
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
