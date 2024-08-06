@@ -2,7 +2,7 @@ package org.batuhankertmen.passwordmanager.auth;
 
 
 import lombok.RequiredArgsConstructor;
-import org.batuhankertmen.passwordmanager.common.AuthTokenException;
+import org.batuhankertmen.passwordmanager.common.exception.AuthTokenException;
 import org.batuhankertmen.passwordmanager.user.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;

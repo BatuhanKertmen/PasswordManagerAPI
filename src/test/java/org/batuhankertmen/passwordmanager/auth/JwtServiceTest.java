@@ -34,7 +34,8 @@ public class JwtServiceTest {
 
     private final String jwtSecretKey = "/RAw4D8q2PmcKKGxLb9ZdfQfldCNDfscyYg6ucc9sVo=";
     private final String jwtIssuer = "testIssuer";
-    private final int expirationDuration = 1000 * 60 * 60;
+    private final int accessTokenExpirationDuration = 900000;
+    private final int refreshTokenExpirationDuration = 86400000;
 
     @BeforeEach
     public void setUp() {
@@ -42,6 +43,8 @@ public class JwtServiceTest {
         jwtService = new JwtService();
         ReflectionTestUtils.setField(jwtService, "jwtSecretKey", jwtSecretKey);
         ReflectionTestUtils.setField(jwtService, "jwtIssuer", jwtIssuer);
+        ReflectionTestUtils.setField(jwtService, "accessTokenExpirationDuration", accessTokenExpirationDuration);
+        ReflectionTestUtils.setField(jwtService, "refreshTokenExpirationDuration", refreshTokenExpirationDuration);
     }
 
     @Test
@@ -121,7 +124,7 @@ public class JwtServiceTest {
         return Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + expirationDuration))
+                .setExpiration(new Date(System.currentTimeMillis() + accessTokenExpirationDuration))
                 .setIssuer(jwtIssuer)
                 .signWith(jwtService.getJwtSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
@@ -130,8 +133,8 @@ public class JwtServiceTest {
     private String createExpiredToken(String username) {
         return Jwts.builder()
                 .setSubject(username)
-                .setIssuedAt(new Date(System.currentTimeMillis() - expirationDuration * 2))
-                .setExpiration(new Date(System.currentTimeMillis() - expirationDuration))
+                .setIssuedAt(new Date(System.currentTimeMillis() - accessTokenExpirationDuration * 2))
+                .setExpiration(new Date(System.currentTimeMillis() - accessTokenExpirationDuration))
                 .setIssuer(jwtIssuer)
                 .signWith(jwtService.getJwtSigningKey(), SignatureAlgorithm.HS256)
                 .compact();

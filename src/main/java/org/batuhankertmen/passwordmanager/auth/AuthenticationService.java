@@ -3,8 +3,8 @@ package org.batuhankertmen.passwordmanager.auth;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.batuhankertmen.passwordmanager.common.AuthTokenException;
-import org.batuhankertmen.passwordmanager.common.UserException;
+import org.batuhankertmen.passwordmanager.common.exception.AuthTokenException;
+import org.batuhankertmen.passwordmanager.common.exception.UserException;
 import org.batuhankertmen.passwordmanager.user.Role;
 import org.batuhankertmen.passwordmanager.user.User;
 import org.batuhankertmen.passwordmanager.user.UserRepository;
@@ -12,7 +12,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

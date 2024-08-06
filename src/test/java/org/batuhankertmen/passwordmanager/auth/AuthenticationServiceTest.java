@@ -1,6 +1,6 @@
 package org.batuhankertmen.passwordmanager.auth;
 
-import org.batuhankertmen.passwordmanager.common.UserException;
+import org.batuhankertmen.passwordmanager.common.exception.UserException;
 import org.batuhankertmen.passwordmanager.user.Role;
 import org.batuhankertmen.passwordmanager.user.User;
 import org.batuhankertmen.passwordmanager.user.UserRepository;
@@ -44,6 +44,9 @@ public class AuthenticationServiceTest {
     @Mock
     private Authentication authentication;
 
+    @Mock
+    private RefreshTokenService refreshTokenService;
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -74,6 +77,7 @@ public class AuthenticationServiceTest {
                 .thenReturn(Collections.emptyList());
         when(passwordEncoder.encode(request.getPassword())).thenReturn("encodedPassword");
         when(userRepository.save(any(User.class))).thenReturn(user);
+        doNothing().when(refreshTokenService).save(any(String.class), any(User.class));
         when(jwtService.generateAccessToken(any(User.class))).thenReturn("jwtToken");
 
         AuthenticationResponseDto response = authenticationService.register(request);
@@ -102,6 +106,7 @@ public class AuthenticationServiceTest {
 
         when(userRepository.findByUsernameOrContact(request.getUsername(), request.getContact()))
                 .thenReturn(Collections.singletonList(existingUser));
+        doNothing().when(refreshTokenService).save(any(String.class), any(User.class));
 
         assertThatThrownBy(() -> authenticationService.register(request))
                 .isInstanceOf(UserException.class)
