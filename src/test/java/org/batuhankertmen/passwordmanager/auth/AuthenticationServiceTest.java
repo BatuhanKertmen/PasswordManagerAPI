@@ -1,6 +1,6 @@
 package org.batuhankertmen.passwordmanager.auth;
 
-import org.batuhankertmen.passwordmanager.common.UserException;
+import org.batuhankertmen.passwordmanager.common.exception.UserException;
 import org.batuhankertmen.passwordmanager.user.Role;
 import org.batuhankertmen.passwordmanager.user.User;
 import org.batuhankertmen.passwordmanager.user.UserRepository;

@@ -1,5 +1,5 @@
 package org.batuhankertmen.passwordmanager.auth;
-import org.batuhankertmen.passwordmanager.common.AuthTokenException;
+import org.batuhankertmen.passwordmanager.common.exception.AuthTokenException;
 import org.batuhankertmen.passwordmanager.user.Role;
 import org.batuhankertmen.passwordmanager.user.User;
 import org.junit.jupiter.api.BeforeEach;

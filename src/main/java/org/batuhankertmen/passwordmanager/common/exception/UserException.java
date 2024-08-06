@@ -1,5 +1,8 @@
-package org.batuhankertmen.passwordmanager.common;
+package org.batuhankertmen.passwordmanager.common.exception;
 
+
+import org.batuhankertmen.passwordmanager.common.ErrorType;
+import org.batuhankertmen.passwordmanager.common.RestResponse;
 
 public class UserException extends RuntimeException {
 
@@ -39,6 +42,13 @@ public class UserException extends RuntimeException {
     }
 
     public static UserException sameContactAlreadyExists(ErrorType error, String message) {
+        return new UserException(RestResponse.badRequest(
+                error,
+                message
+        ));
+    }
+
+    public static UserException invalidPasswordException(ErrorType error, String message) {
         return new UserException(RestResponse.badRequest(
                 error,
                 message
