@@ -65,9 +65,13 @@ public class AuthenticationService implements IAuthenticationService{
         userRepository.save(user);
 
         String accessToken = jwtService.generateAccessToken(user);
-        String refreshToken = jwtService.generateRefreshToken(user);
 
-        refreshTokenService.save(refreshToken, user);
+        String refreshToken = "";
+        if (request.isRememberMe()) {
+            refreshToken = jwtService.generateRefreshToken(user);
+            refreshTokenService.save(refreshToken, user);
+        }
+
 
         return AuthenticationResponseDto.builder()
                 .accessToken(accessToken)
@@ -87,10 +91,14 @@ public class AuthenticationService implements IAuthenticationService{
 
         User user = userRepository.findByUsernameAndEnabledTrue(request.getUsername())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found!"));
-        String accessToken = jwtService.generateAccessToken(user);
-        String refreshToken = jwtService.generateRefreshToken(user);
 
-        refreshTokenService.save(refreshToken, user);
+        String accessToken = jwtService.generateAccessToken(user);
+
+        String refreshToken = "";
+        if (request.isRememberMe()) {
+            refreshToken = jwtService.generateRefreshToken(user);
+            refreshTokenService.save(refreshToken, user);
+        }
 
         return AuthenticationResponseDto.builder()
                 .accessToken(accessToken)
