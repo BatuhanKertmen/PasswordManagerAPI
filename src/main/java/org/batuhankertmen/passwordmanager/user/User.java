@@ -3,6 +3,7 @@ package org.batuhankertmen.passwordmanager.user;
 import jakarta.persistence.*;
 import lombok.*;
 import org.batuhankertmen.passwordmanager.auth.RefreshToken;
+import org.batuhankertmen.passwordmanager.videogame.VideoGameComment;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -48,6 +49,9 @@ public class User implements UserDetails {
 
     @OneToMany(mappedBy="user", fetch=FetchType.LAZY, cascade=CascadeType.ALL)
     private List<RefreshToken> refreshTokens;
+
+    @OneToMany(mappedBy="user", fetch=FetchType.LAZY, cascade=CascadeType.ALL)
+    private List<VideoGameComment> videoGameComments;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

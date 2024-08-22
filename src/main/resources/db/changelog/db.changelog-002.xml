@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+    
+    <changeSet id="4" author="batuhan">
+        <createTable tableName="video_game">
+            <column name="title" type="varchar(64)">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="description" type="varchar(1024)"/>
+            <column name="image_path" type="varchar(256)"/>
+            <column name="rating" type="float"/>
+            <column name="deleted" type="boolean"/>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="video_game"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="5" author="Batuhan">
+        <createTable tableName="video_game_comment">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="comment" type="varchar(4096)"/>
+            <column name="rating" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column type="boolean" name="deleted"/>
+
+            <column name="users" type="varchar(64)"/>
+            <column name="video_game" type="varchar(64)"/>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="video_game_comment"
+                                 baseColumnNames="user"
+                                 constraintName="video_game_comment_fkc_1"
+                                 referencedTableName="users"
+                                 referencedColumnNames="username"/>
+
+        <addForeignKeyConstraint baseTableName="video_game_comment"
+                                 baseColumnNames="video_game"
+                                 constraintName="video_game_comment_fkc_2"
+                                 referencedTableName="video_game"
+                                 referencedColumnNames="title"/>
+
+        <rollback>
+            <dropTable tableName="video_game_comment"/>
+        </rollback>
+    </changeSet>
+    
+</databaseChangeLog>
