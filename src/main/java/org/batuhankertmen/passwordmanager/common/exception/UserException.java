@@ -4,21 +4,11 @@ package org.batuhankertmen.passwordmanager.common.exception;
 import org.batuhankertmen.passwordmanager.common.ErrorType;
 import org.batuhankertmen.passwordmanager.common.RestResponse;
 
-public class UserException extends RuntimeException {
+public class UserException extends RestException {
 
-    private final RestResponse restResponse;
 
-    private UserException(RestResponse restResponse) {
-        this.restResponse = restResponse;
-    }
-
-    @Override
-    public String getMessage() {
-        return restResponse.getMessage();
-    }
-
-    public ErrorType getErrorType() {
-        return restResponse.getError();
+    protected UserException(RestResponse restResponse) {
+        super(restResponse);
     }
 
     public static UserException sameUsernameAlreadyExists() {

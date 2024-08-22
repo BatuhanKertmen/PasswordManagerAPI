@@ -55,12 +55,16 @@ public class RestResponse {
                 .build();
     }
 
-    public static RestResponse serverError(ErrorType error, String message) {
+    public static RestResponse serverError(String message) {
         return RestResponse.builder()
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .error(error)
+                .error(ErrorType.INTERNAL_SERVER_ERROR)
                 .message(message)
                 .build();
+    }
+
+    public ResponseEntity<RestResponse> toResponseEntity() {
+        return ResponseEntity.status(this.status).body(this);
     }
 }
 
