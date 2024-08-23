@@ -7,7 +7,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.batuhankertmen.passwordmanager.common.ErrorType;
 import org.batuhankertmen.passwordmanager.common.exception.FieldValidationException;
-import org.batuhankertmen.passwordmanager.common.exception.UserException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
