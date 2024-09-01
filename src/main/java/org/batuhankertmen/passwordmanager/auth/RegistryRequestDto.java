@@ -35,5 +35,6 @@ public class RegistryRequestDto {
     @Size(min = 5, max = 64, message = "Username must be between 5 and 64 characters")
     private String contact;
 
+    @JsonProperty("remember_me")
     private boolean rememberMe;
 }
