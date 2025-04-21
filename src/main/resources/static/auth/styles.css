@@ -1,0 +1,75 @@
+/* Container for the login form */
+.login-container {
+    width: 300px;
+    margin: 0 auto;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    text-align: center;
+    margin-top: 100px;
+}
+
+/* Header for the login form */
+.login-header {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+/* Form and input styles */
+.login-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.form-input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.checkbox-input {
+    margin-right: 5px;
+}
+
+.remember-me {
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    margin-bottom: 20px;
+}
+
+/* Button styling */
+.login-button {
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #4CAF50;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.login-button:hover {
+    background-color: #45a049;
+}
+
+/* Signup text and link */
+.signup-text {
+    font-size: 14px;
+}
+
+.signup-link {
+    color: #4CAF50;
+    text-decoration: none;
+}
+
+.signup-link:hover {
+    text-decoration: underline;
+}

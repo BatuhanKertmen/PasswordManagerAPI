@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Registration</title>
+    <link rel="stylesheet" th:href="@{/client/client_register.html}">
+</head>
+<body>
+<div class="form-container">
+    <h2>Register Client</h2>
+    <form id="clientForm">
+        <label for="applicationName">Application Name</label>
+        <input type="text" id="applicationName" name="applicationName" placeholder="Enter application name" required>
+
+        <label for="programType">Program Type</label>
+        <select id="programType" name="programType" required>
+            <option value="" disabled selected>Select program type</option>
+            <option value="SERVER_APP">Server App</option>
+            <option value="SINGLE_PAGE_APP">Single Page App</option>
+            <option value="MOBILE_APP">Mobile App</option>
+        </select>
+        <label for="redirectUri">Redirect URI</label>
+        <div id="uriContainer">
+            <input type="url" id="redirectUri" name="redirectUri" placeholder="Enter redirect URI" required>
+        </div>
+        <button type="button" id="addUriBtn">Add another URI</button>
+        <button type="submit">Register</button>
+    </form>
+    <p id="responseMessage"></p>
+    <div id="clientInfo" style="display:none;">
+        <h3>Client Information</h3>
+        <p><strong>Client ID:</strong> <span id="clientId"></span></p>
+        <p><strong>Client Secret:</strong>
+            <input type="password" id="clientSecret" readonly style="width: 75%">
+            <button id="toggleSecretBtn" type="button">Show Secret</button>
+        </p>
+    </div>
+</div>
+
+<script>
+    const uriContainer = document.getElementById('uriContainer');
+    const addUriBtn = document.getElementById('addUriBtn');
+    const clientInfoDiv = document.getElementById('clientInfo');
+    const clientIdSpan = document.getElementById('clientId');
+    const clientSecretInput = document.getElementById('clientSecret');
+    const toggleSecretBtn = document.getElementById('toggleSecretBtn');
+    const clientForm = document.getElementById('clientForm');
+    const formContainer = document.querySelector(".form-container");
+
+    addUriBtn.addEventListener('click', function () {
+        const newUriInput = document.createElement('input');
+        newUriInput.type = 'url';
+        newUriInput.name = 'redirectUri';
+        newUriInput.placeholder = 'Enter redirect URI';
+        uriContainer.appendChild(newUriInput);
+    });
+
+    toggleSecretBtn.addEventListener('click', function() {
+        if (clientSecretInput.type === 'password') {
+            clientSecretInput.type = 'text';
+            toggleSecretBtn.innerText = 'Hide';
+        } else {
+            clientSecretInput.type = 'password';
+            toggleSecretBtn.innerText = 'Show';
+        }
+    });
+
+    document.getElementById('clientForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const firmName = document.getElementById('applicationName').value;
+        const programType = document.getElementById('programType').value;
+        const redirectUris = Array.from(document.getElementsByName('redirectUri'))
+            .map(input => input.value)
+            .filter(uri => uri);  // Filter out empty URIs
+
+        if (firmName && redirectUris.length > 0) {
+            fetch('/oauth/v1/client/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name: firmName,
+                    program_type: programType,
+                    redirect_uri_list: redirectUris
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('responseMessage').innerText = 'Client registered successfully!';
+
+                // Assuming 'data' contains the client ID and secret
+                clientIdSpan.innerText = data.client_id;
+                clientSecretInput.value = data.client_secret;
+
+                // Show the client info section and hide the form
+                clientInfoDiv.style.display = 'block';
+                clientForm.style.display = 'none';
+                formContainer.style.width = '40%';
+            })
+            .catch(error => {
+                document.getElementById('responseMessage').innerText = 'An error occurred. Please try again.';
+            });
+        } else {
+            document.getElementById('responseMessage').innerText = 'Please enter a firm name and at least one redirect URI.';
+        }
+    });
+</script>
+</body>
+</html>

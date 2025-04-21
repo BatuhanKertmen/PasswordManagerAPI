@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="1727191183420-1" author="batuhan">
+        <createTable tableName="company">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="username" type="varchar(256)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="password" type="varchar(256)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="enabled" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="date"/>
+            <column name="last_updated_at" type="date"/>
+            <column name="role" type="varchar(7)"/>
+        </createTable>
+
+        <addUniqueConstraint tableName="company" columnNames="username" />
+    </changeSet>
+
+    <changeSet id="1725546161045-1" author="Batuhan">
+        <createTable tableName="client">
+            <column name="client_id" type="varchar(256)">
+                <constraints primaryKey="true"/>
+            </column>
+
+            <column name="name" type="varchar(256)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="client_type" type="varchar(16)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="client_secret" type="varchar(512)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="company_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="client" baseColumnNames="company_id" constraintName="client_fkc_1"
+                                 referencedTableName="company"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="1" author="batuhan">
+        <createTable tableName="users">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="username" type="varchar(64)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="password" type="varchar(64)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="enabled" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="first_name" type="varchar(64)"/>
+            <column name="last_name" type="varchar(64)"/>
+            <column name="contact" type="varchar(64)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="date"/>
+            <column name="last_updated_at" type="date"/>
+        </createTable>
+
+        <addUniqueConstraint tableName="users" columnNames="contact"/>
+        <addUniqueConstraint tableName="users" columnNames="username"/>
+
+        <rollback>
+            <dropTable tableName="users"/>
+            <dropUniqueConstraint tableName="users"/>
+        </rollback>
+    </changeSet>
+
+
+
+    <changeSet id="2" author="batuhan">
+        <createTable tableName="authority">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="authority" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="int">
+                <constraints nullable="true"/>
+            </column>
+            <column name="company_id" type="int">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+
+        <addUniqueConstraint tableName="authority" columnNames="user_id, authority" constraintName="authority_uqc_1"/>
+        <addUniqueConstraint tableName="authority" columnNames="company_id, authority" constraintName="authority_uqc_2"/>
+        <addForeignKeyConstraint baseTableName="authority" baseColumnNames="user_id" constraintName="authority_fkc_1"
+                                 referencedTableName="users" referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="authority" baseColumnNames="company_id" constraintName="authority_fkc_2"
+                                 referencedTableName="company"
+                                 referencedColumnNames="id"/>
+
+        <rollback>
+            <dropAllForeignKeyConstraints baseTableName="authority"/>
+            <dropUniqueConstraint tableName="authority"/>
+            <dropTable tableName="authority"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="1726413740302-1" author="batuhan">
+        <createTable tableName="redirect_uri">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+
+            <column name="uri" type="varchar(256)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="client_client_id" type="varchar(256)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="redirect_uri"
+                                 baseColumnNames="client_client_id"
+                                 constraintName="redirect_uri_fkc_1"
+                                 referencedTableName="client"
+                                 referencedColumnNames="client_id"/>
+
+        <rollback>
+            <dropTable tableName="redirect_uri"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="1726431699875-1" author="batuhan">
+        <createTable tableName="allowed_client">
+            <column name="user_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="client_id" type="varchar(256)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addUniqueConstraint tableName="allowed_client"
+                             columnNames="user_id, client_id"
+                             constraintName="allowed_client_uqc_1"/>
+
+        <addForeignKeyConstraint baseTableName="allowed_client"
+                                 baseColumnNames="user_id"
+                                 constraintName="allowed_user_fkc_1"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="allowed_client"
+                                 baseColumnNames="client_id"
+                                 constraintName="redirect_uri_fkc_2"
+                                 referencedTableName="client"
+                                 referencedColumnNames="client_id"/>
+
+        <rollback>
+            <dropTable tableName="allowed_client"/>
+        </rollback>
+    </changeSet>
+
+
+    <changeSet id="1726599149087-1" author="batuhan">
+        <createTable tableName="authorization_code">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="code" type="varchar(256)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="active" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="client_client_id" type="varchar(256)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="redirect_uri_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="code_challenge" type="varchar(128)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="code_challenge_method" type="varchar(5)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="authorization_code" baseColumnNames="client_client_id"
+                                 constraintName="authorization_code_fkc_1"
+                                 referencedTableName="client"
+                                 referencedColumnNames="client_id"/>
+
+        <addForeignKeyConstraint baseTableName="authorization_code" baseColumnNames="user_id"
+                                 constraintName="authorization_code_fkc_2"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="authorization_code" baseColumnNames="redirect_uri_id"
+                                 constraintName="authorization_code_fkc_3"
+                                 referencedTableName="redirect_uri"
+                                 referencedColumnNames="id"/>
+
+        <addUniqueConstraint tableName="authorization_code" columnNames="code"/>
+
+        <createTable tableName="scope">
+        <column name="id" type="int" autoIncrement="true">
+            <constraints primaryKey="true"/>
+        </column>
+        <column name="scope" type="varchar(32)">
+            <constraints nullable="false"/>
+        </column>
+        <column name="authorization_code_id" type="int"/>
+    </createTable>
+
+        <rollback>
+            <dropTable tableName="scope"/>
+            <dropTable tableName="authorization_code"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="1733517202525-1" author="batuhan">
+        <createTable tableName="refresh_token">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="code" type="varchar(256)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="active" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="client_client_id" type="varchar(256)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="user_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addUniqueConstraint tableName="refresh_token" columnNames="code"/>
+        <addForeignKeyConstraint baseTableName="refresh_token" baseColumnNames="client_client_id" constraintName="refresh_token_fkc_1"
+                                 referencedTableName="client"
+                                 referencedColumnNames="client_id"/>
+        <addForeignKeyConstraint baseTableName="refresh_token" baseColumnNames="user_id" constraintName="refresh_token_fkc_2"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+
+        <rollback>
+            <dropTable tableName="refresh_token"/>
+        </rollback>
+    </changeSet>
+
+
+    <changeSet id="1733575312888-1" author="batuhan">
+        <addColumn tableName="scope">
+            <column name="user_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
+        <addColumn tableName="scope">
+            <column name="client_client_id" type="varchar(256)">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
+        <addUniqueConstraint tableName="scope" columnNames="user_id, client_client_id, scope" constraintName="scope_uqc_1"/>
+        <addForeignKeyConstraint baseTableName="scope" baseColumnNames="user_id" constraintName="scope_fkc_1"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="scope" baseColumnNames="client_client_id" constraintName="scope_fkc_2" referencedTableName="client"
+                                 referencedColumnNames="client_id"/>
+
+        <rollback>
+            <dropUniqueConstraint tableName="scope" constraintName="scope_uqc_1"/>
+            <dropForeignKeyConstraint baseTableName="scope" constraintName="scope_fkc_1"/>
+            <dropForeignKeyConstraint baseTableName="scope" constraintName="scope_fkc_2"/>
+            <dropColumn tableName="scope" columnName="user_id"/>
+            <dropColumn tableName="scope" columnName="client_client_id"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="1738178078326-1" author="Batuhan">
+        <addColumn tableName="authorization_code">
+            <column name="nonce" type="varchar(64)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="1738187888967-1" author="Batuhan">
+        <dropColumn tableName="users">
+            <column name="contact"/>
+        </dropColumn>
+        <addColumn tableName="users">
+            <column name="middle_name" type="varchar(64)"/>
+            <column name="address" type="varchar(256)"/>
+            <column name="profile_picture" type="varchar(256)"/>
+            <column name="email" type="varchar(128)"/>
+            <column name="email_verified" type="boolean"/>
+            <column name="birthday" type="date"/>
+            <column name="phone_number" type="varchar(16)"/>
+            <column name="phone_number_verified" type="boolean"/>
+            <column name="locale" type="varchar(4)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="1738444822911-1" author="Batuhan">
+        <dropTable tableName="allowed_client"/>
+    </changeSet>
+    
+</databaseChangeLog>

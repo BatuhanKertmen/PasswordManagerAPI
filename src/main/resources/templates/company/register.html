@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company Register Page</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="login-container">
+    <h2 class="login-header">Company Registration</h2>
+    <form id="companyRegisterForm" class="login-form">
+        <div class="form-group">
+            <label for="companyUsername">Company Username</label>
+            <input type="text" name="companyUsername" id="companyUsername" class="form-input" placeholder="Enter company username" required>
+        </div>
+        <div class="form-group">
+            <label for="companyPassword">Password</label>
+            <input type="password" id="companyPassword" name="companyPassword" class="form-input" placeholder="Enter password" required>
+        </div>
+        <div class="form-group">
+            <label for="confirm-companyPassword">Confirm Password</label>
+            <input type="password" id="confirm-companyPassword" name="confirm-companyPassword" class="form-input" placeholder="Confirm your password" required>
+        </div>
+        <button type="submit" class="login-button">Register Company</button>
+    </form>
+    <p class="signup-text">
+        Already have an account? <a href="/oauth/v1/company/login" class="signup-link">Login here</a>
+    </p>
+</div>
+
+<script>
+    // JavaScript to display error message if `?error=true` is present in the URL
+    window.onload = function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('error') && urlParams.get('error') === 'true') {
+            document.getElementById('error-message').style.display = 'block';
+        }
+    };
+
+    document.getElementById('companyRegisterForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent the default form submission
+
+        // Collect form data
+        const formData = {
+            username: document.getElementById('companyUsername').value,
+            password: document.getElementById('companyPassword').value,
+        };
+
+        // Perform validation (if needed)
+
+        // Send the data as JSON
+        fetch('/oauth/v1/company/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData),
+        })
+            .then(response => response.json())
+            .then(data => {
+                alert("Company registration successful!");
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    });
+</script>
+
+</body>
+</html>

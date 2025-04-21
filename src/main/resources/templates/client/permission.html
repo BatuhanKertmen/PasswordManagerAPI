@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Permission Request</title>
+    <link rel="stylesheet" href="../../static/client/client_styles.css">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .auth-container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 100%;
+        }
+
+        .auth-container h1 {
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .auth-container p {
+            margin-bottom: 20px;
+            color: #555;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 120px;
+        }
+
+        .accept {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .accept:hover {
+            background-color: #45a049;
+        }
+
+        .decline {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .decline:hover {
+            background-color: #e53935;
+        }
+
+
+        .auth-container {
+            width: 40%;
+        }
+
+        .scopeEnum-item {
+            display: flex;
+            justify-content: space-between; /* Left-Right alignment */
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .scopeEnum-item:last-child {
+            border-bottom: none;
+        }
+
+        .scopeEnum-icon {
+            width: 40px;
+            height: 40px;
+            background-color: #ddd;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .scopeEnum-key {
+            flex: 0 0 30%; /* Left-side: fixed width for scopeEnum key */
+            font-size: 16px;
+            font-weight: bold;
+            text-align: left;
+        }
+
+        .scopeEnum-description {
+            flex: 1; /* Right-side: flexible width for description */
+            text-align: left;
+        }
+
+        .scopeEnum-description p {
+            font-size: 12px;
+            color: #666;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+<div class="auth-container">
+    <h1>Authorization Request</h1>
+    <p>This application is requesting permission to access these information.</p>
+
+    <div th:each="entry : ${scopes}" class="scopeEnum-item">
+        <div class="scopeEnum-icon">
+            <span th:text="${entry.key.substring(0, 1).toUpperCase()}"></span>
+        </div>
+        <h3 class="scopeEnum-key" th:text="${entry.key}"></h3>
+        <p class="scopeEnum-description" th:text="${entry.value}"></p>
+    </div>
+
+    <p>Do you give permission to access your information?</p>
+
+    <div class="button-group">
+        <button class="btn accept" onclick="handlePermission(true)">Accept</button>
+        <button class="btn decline" onclick="handlePermission(false)">Decline</button>
+    </div>
+</div>
+
+<script >
+    function handlePermission(granted) {
+        const current_url = new URL(window.location.href);
+        const params = new URLSearchParams(current_url.search);
+        const redirect_uri = params.get('redirect_uri');
+
+        const url = granted
+            ? `/oauth/v1/client/allow`
+            : `${decodeURI(redirect_uri)}?error=access_denied`;
+        window.location.href = url;
+    }
+</script>
+</body>
+</html>

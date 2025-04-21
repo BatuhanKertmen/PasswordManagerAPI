@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Apps Connected to Your Account</title>
+  <link rel="stylesheet" href="/user/permissions">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 20px auto;
+      background: #fff;
+      padding: 20px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      border-radius: 8px;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    .description {
+      margin-bottom: 20px;
+      color: #555;
+      font-size: 0.9rem;
+    }
+
+    .client-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .client-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 15px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .client-item:last-child {
+      border-bottom: none;
+    }
+
+    .client-info {
+      display: flex;
+      align-items: center;
+    }
+
+    .client-logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin-right: 15px;
+      background-color: #eee;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      color: #999;
+    }
+
+    .client-details {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .client-name {
+      font-weight: bold;
+      color: #333;
+    }
+
+    .client-access {
+      font-size: 0.9rem;
+      color: #555;
+    }
+
+    .revoke-button {
+      background-color: #ff4d4d;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 5px 10px;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+
+    .revoke-button:hover {
+      background-color: #ff1a1a;
+    }
+
+
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Apps Connected to Your Account</h1>
+  <p class="description">You've authorized access to your account for the apps listed below:</p>
+
+  <ul class="client-list">
+    <li class="client-item" th:each="client : ${authorizedClients.keySet()}">
+      <div class="client-info">
+        <div class="client-logo" th:text="${client.name.substring(0, 1).toUpperCase()}">A</div>
+        <div class="client-details">
+          <span class="client-name" th:text="${client.name}">Client Name</span>
+          <!--span class="client-access" th:text="'Access: ' + ${client.accessDescription}">Access Level</span-->
+        </div>
+      </div>
+      <input type="hidden" name="clientId" id="client-id-input" th:value="${client.clientId}">
+      <button class="revoke-button" onclick="redirect()"> Revoke Access</button>
+
+    </li>
+  </ul>
+</div>
+
+<script>
+  function redirect() {
+    let clientId = document.getElementById("client-id-input").value;
+    if (clientId) {
+      window.location.href = "/oauth/v1/user/revoke?clientId=" + encodeURIComponent(clientId);
+    } else {
+      alert("Client ID not found!");
+    }
+  }
+
+</script>
+
+</body>
+</html>
